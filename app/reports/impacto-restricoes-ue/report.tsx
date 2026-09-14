@@ -216,9 +216,11 @@ export default function Report() {
   ];
 
   const btn = (active: boolean) =>
-    `border border-[#cfd8d9] bg-white px-3 py-2 text-[13px] font-medium text-[#001E1D] ${
-      active ? '!border-[#001E1D] bg-[#001E1D] text-white' : 'hover:border-[#001E1D]'
-    }`;
+    `border px-3 py-2 text-[13px] text-[#001E1D] ${
+    active
+      ? 'border-[#001E1D] font-bold'
+      : 'border-[#cfd8d9] bg-white font-medium hover:border-[#001E1D]'
+  }`;
   const selectCls =
     'border border-[#cfd8d9] bg-white px-3 py-2 text-[13px] font-medium text-[#001E1D]';
 
