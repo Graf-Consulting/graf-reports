@@ -12,7 +12,9 @@ graf-reports/
 │   ├── globals.css
 │   └── reports/
 │       └── report-1/
-│           └── page.tsx
+│           ├── data.ts
+│           ├── page.tsx     
+│           └── reports.tsx
 ├── components/
 │   ├── Header.tsx
 │   └── Footer.tsx
