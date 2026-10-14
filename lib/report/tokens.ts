@@ -11,6 +11,9 @@ export const COLORS = {
   grid: '#e3e8e8',
 };
 
+/** Cores de destaque usadas em sequência pelos blocos (cartões de indicador, rankings). */
+export const ACCENT_SEQUENCE = [COLORS.primary, COLORS.accent, COLORS.orange, COLORS.secondary];
+
 /** Cores das séries em gráficos de área empilhada. */
 export const AREA_PALETTE = [
   '#1B998B', '#FFD166', '#2D6A4F', '#FF9F1C', '#0077B6', '#E63946',

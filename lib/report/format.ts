@@ -5,3 +5,9 @@ export function compact(v: number) {
 
 /** Valor em dólares no formato compacto (ex.: US$ 1,1 bi). */
 export const fob = (v: number) => `US$ ${compact(v)}`;
+
+/**
+ * Rótulo sem o código numérico do início (ex.: "0927800 - ITAJAI" → "ITAJAI").
+ * Vazio vira "Não informado". Fallback para dados que não chegam limpos no data.json.
+ */
+export const cleanLabel = (v: string) => String(v || 'Não informado').replace(/^\s*\d+\s*-\s*/, '');
