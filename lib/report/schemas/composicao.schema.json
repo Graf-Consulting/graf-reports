@@ -1,0 +1,312 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "composicao.schema.json",
+  "title": "Composição do report (app/reports/<slug>/composicao.json)",
+  "description": "Estrutura do report e catálogo de blocos do kit (ADR-004; PRD, Q10). A composição não traz textos nem estilo: os textos de interface vêm do guideline.md, os de análise da metodologia.md, e cores e estilos de lib/report/tokens.ts. Cada tipo de bloco em definitions é um item do catálogo. Blocos existentes não mudam de comportamento; props novas são opcionais.",
+  "type": "object",
+  "required": ["slug", "secoes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "slug": {
+      "description": "Igual ao slug do guideline.md e ao nome das pastas do estudo.",
+      "$ref": "#/definitions/idKebab"
+    },
+    "secoes": {
+      "description": "Seções na ordem do guideline.md. Sobretítulo, título e introdução vêm da seção de mesmo id no guideline.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/secao" }
+    }
+  },
+  "definitions": {
+    "idKebab": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "nomeTecnico": {
+      "description": "Nome de tabela ou campo do data.json.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "formato": {
+      "description": "texto (valor como está) ou um formatador de lib/report/format.ts.",
+      "enum": ["texto", "compact", "fob", "cleanLabel"]
+    },
+    "campoFormatado": {
+      "description": "Um campo do data.json, com formato opcional de exibição.",
+      "type": "object",
+      "required": ["campo"],
+      "additionalProperties": false,
+      "properties": {
+        "campo": { "$ref": "#/definitions/nomeTecnico" },
+        "formato": { "$ref": "#/definitions/formato" }
+      }
+    },
+    "top": {
+      "description": "Quantos itens mostrar, pelos maiores valores.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "secao": {
+      "type": "object",
+      "required": ["id", "blocos"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Id da seção no guideline.md.",
+          "$ref": "#/definitions/idKebab"
+        },
+        "blocos": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/bloco" }
+        }
+      }
+    },
+    "bloco": {
+      "description": "Um bloco do catálogo. O tipo define os demais campos.",
+      "type": "object",
+      "required": ["tipo"],
+      "properties": {
+        "tipo": {
+          "enum": ["mensagem_chave", "indicadores", "ranking", "serie_empilhada", "fluxo", "destaque", "nota", "grupo", "proprio"]
+        }
+      },
+      "allOf": [
+        { "if": { "properties": { "tipo": { "const": "mensagem_chave" } } }, "then": { "$ref": "#/definitions/mensagem_chave" } },
+        { "if": { "properties": { "tipo": { "const": "indicadores" } } }, "then": { "$ref": "#/definitions/indicadores" } },
+        { "if": { "properties": { "tipo": { "const": "ranking" } } }, "then": { "$ref": "#/definitions/ranking" } },
+        { "if": { "properties": { "tipo": { "const": "serie_empilhada" } } }, "then": { "$ref": "#/definitions/serie_empilhada" } },
+        { "if": { "properties": { "tipo": { "const": "fluxo" } } }, "then": { "$ref": "#/definitions/fluxo" } },
+        { "if": { "properties": { "tipo": { "const": "destaque" } } }, "then": { "$ref": "#/definitions/destaque" } },
+        { "if": { "properties": { "tipo": { "const": "nota" } } }, "then": { "$ref": "#/definitions/nota" } },
+        { "if": { "properties": { "tipo": { "const": "grupo" } } }, "then": { "$ref": "#/definitions/grupo" } },
+        { "if": { "properties": { "tipo": { "const": "proprio" } } }, "then": { "$ref": "#/definitions/proprio" } }
+      ]
+    },
+
+    "mensagem_chave": {
+      "description": "Catálogo · KeyMessage. Valor em destaque e uma leitura ao lado.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "valor", "leitura"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "mensagem_chave" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "valor": { "$ref": "#/definitions/campoFormatado" },
+        "leitura": {
+          "description": "Id da leitura da metodologia exibida ao lado do valor.",
+          "$ref": "#/definitions/idKebab"
+        }
+      }
+    },
+
+    "indicadores": {
+      "description": "Catálogo · MetricCards. Um cartão por item do campo indicadores do guideline: nome de rotulos, valor do campo e detalhe da leitura citada.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "itens"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "indicadores" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": {
+          "description": "Tabela de uma linha com os valores dos indicadores.",
+          "$ref": "#/definitions/nomeTecnico"
+        },
+        "itens": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "required": ["campo"],
+            "additionalProperties": false,
+            "properties": {
+              "campo": { "$ref": "#/definitions/nomeTecnico" },
+              "formato": { "$ref": "#/definitions/formato" },
+              "mostrar_unidade": {
+                "description": "Opcional. true acrescenta a unidade do campo depois do valor (ex.: 271,3 mi kg).",
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "ranking": {
+      "description": "Catálogo · ChartCard + RankingChart. Barras horizontais com os maiores valores. Título e descrição vêm da análise na seção do guideline.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "rotulo", "valor"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "ranking" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "rotulo": {
+          "description": "Campo com o nome de cada barra.",
+          "$ref": "#/definitions/campoFormatado"
+        },
+        "valor": {
+          "description": "Campo que ordena e dá o comprimento das barras.",
+          "$ref": "#/definitions/nomeTecnico"
+        },
+        "extra": {
+          "description": "Opcional. Campo exibido no detalhe ao passar o mouse.",
+          "$ref": "#/definitions/nomeTecnico"
+        },
+        "top": { "$ref": "#/definitions/top" }
+      }
+    },
+
+    "serie_empilhada": {
+      "description": "Catálogo · ChartCard + StackedAreaChart + controles. Área empilhada por período; o leitor alterna a dimensão e a métrica. Os nomes das opções vêm de rotulos.",
+      "type": "object",
+      "required": ["tipo", "analise", "periodo", "dimensoes", "metricas"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "serie_empilhada" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "periodo": {
+          "description": "Campo do período (eixo x), igual em todas as tabelas das dimensões.",
+          "$ref": "#/definitions/nomeTecnico"
+        },
+        "dimensoes": {
+          "description": "Opções de dimensão. A primeira é a inicial.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["tabela", "campo"],
+            "additionalProperties": false,
+            "properties": {
+              "tabela": { "$ref": "#/definitions/nomeTecnico" },
+              "campo": { "$ref": "#/definitions/nomeTecnico" },
+              "formato": { "$ref": "#/definitions/formato" }
+            }
+          }
+        },
+        "metricas": {
+          "description": "Opções de métrica. A primeira é a inicial.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "top": { "$ref": "#/definitions/top" }
+      }
+    },
+
+    "fluxo": {
+      "description": "Catálogo · ChartCard + SankeyChart + controles. Fluxo em camadas; o leitor alterna a métrica e, opcionalmente, filtra por um campo.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "camadas", "metricas"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "fluxo" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "camadas": {
+          "description": "Campos de cada camada, da esquerda para a direita.",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": { "$ref": "#/definitions/campoFormatado" }
+        },
+        "metricas": {
+          "description": "Opções de métrica. A primeira é a inicial.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "filtro": {
+          "description": "Opcional. Seletor sobre um campo. A primeira opção é a inicial; \"todos\" mostra tudo.",
+          "type": "object",
+          "required": ["campo", "opcoes"],
+          "additionalProperties": false,
+          "properties": {
+            "campo": { "$ref": "#/definitions/nomeTecnico" },
+            "opcoes": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": ["string", "number"] }
+            }
+          }
+        },
+        "top": { "$ref": "#/definitions/top" }
+      }
+    },
+
+    "destaque": {
+      "description": "Catálogo · Callout. Caixa com uma conclusão. Título e tipo vêm da conclusão citada na seção do guideline. Valores de formato texto (nomes) saem em negrito; números, não.",
+      "type": "object",
+      "required": ["tipo", "conclusao"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "destaque" },
+        "conclusao": { "$ref": "#/definitions/idKebab" }
+      }
+    },
+
+    "nota": {
+      "description": "Catálogo · MethodNote. Nota com sobretítulo e título da seção, uma leitura e ressalvas em lista.",
+      "type": "object",
+      "required": ["tipo"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "nota" },
+        "leitura": { "$ref": "#/definitions/idKebab" },
+        "ressalvas": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/idKebab" }
+        }
+      }
+    },
+
+    "grupo": {
+      "description": "Catálogo · grade. Blocos lado a lado; empilham em telas pequenas.",
+      "type": "object",
+      "required": ["tipo", "colunas", "blocos"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "grupo" },
+        "colunas": { "enum": [2, 3] },
+        "blocos": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "allOf": [
+              { "$ref": "#/definitions/bloco" },
+              { "not": { "properties": { "tipo": { "const": "grupo" } } } }
+            ]
+          }
+        }
+      }
+    },
+
+    "proprio": {
+      "description": "Componente próprio do estudo, em app/reports/<slug>/components/, registrado no registro local.",
+      "type": "object",
+      "required": ["tipo", "nome", "analise"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "proprio" },
+        "nome": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "props": {
+          "description": "Props do componente: nomes de campo e parâmetros, nunca textos nem estilo.",
+          "type": "object"
+        }
+      }
+    }
+  }
+}

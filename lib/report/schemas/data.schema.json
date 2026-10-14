@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "data.schema.json",
+  "title": "data.json do estudo",
+  "description": "Estrutura do data.json (ADR-002; template em docs/template/data.json). Checagens entre arquivos e o formato de cada valor por tipo de campo ficam na skill validar-entradas.",
+  "type": "object",
+  "required": ["metadata", "tabelas"],
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "description": "O que vale para o estudo inteiro.",
+      "type": "object",
+      "required": ["data_referencia", "fontes"],
+      "additionalProperties": false,
+      "properties": {
+        "data_referencia": {
+          "description": "Data da extração dos dados, AAAA-MM-DD.",
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
+        },
+        "periodo": {
+          "description": "Opcional. Período que os dados cobrem, em AAAA, AAAA-MM ou AAAA-MM-DD.",
+          "type": "object",
+          "required": ["inicio", "fim"],
+          "additionalProperties": false,
+          "properties": {
+            "inicio": { "$ref": "#/definitions/marcoTemporal" },
+            "fim": { "$ref": "#/definitions/marcoTemporal" }
+          }
+        },
+        "fontes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["nome", "referencia"],
+            "additionalProperties": false,
+            "properties": {
+              "nome": { "$ref": "#/definitions/textoPreenchido" },
+              "referencia": { "$ref": "#/definitions/textoPreenchido" }
+            }
+          }
+        }
+      }
+    },
+    "tabelas": {
+      "description": "Tabelas nomeadas do estudo.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+      "additionalProperties": { "$ref": "#/definitions/tabela" }
+    }
+  },
+  "definitions": {
+    "textoPreenchido": { "type": "string", "minLength": 1 },
+    "nomeTecnico": {
+      "description": "Nome de tabela ou campo: minúsculas, números e sublinhado, começando por letra.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "marcoTemporal": {
+      "type": "string",
+      "pattern": "^\\d{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?)?$"
+    },
+    "tabela": {
+      "type": "object",
+      "required": ["descricao", "campos", "linhas"],
+      "if": {
+        "required": ["linhas"],
+        "properties": { "linhas": { "minItems": 2 } }
+      },
+      "then": { "required": ["chave"] },
+      "additionalProperties": false,
+      "properties": {
+        "descricao": {
+          "description": "O que cada linha representa.",
+          "$ref": "#/definitions/textoPreenchido"
+        },
+        "chave": {
+          "description": "Campos que identificam uma linha. Obrigatória quando a tabela tem mais de uma linha.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "campos": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+          "additionalProperties": { "$ref": "#/definitions/campo" }
+        },
+        "linhas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+            "additionalProperties": {
+              "type": ["string", "number", "array", "null"]
+            }
+          }
+        }
+      }
+    },
+    "campo": {
+      "type": "object",
+      "required": ["tipo", "descricao"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": {
+          "description": "texto, numero, data (AAAA-MM-DD), mes (AAAA-MM), ano (inteiro), geo_ponto ([lat, lon]) ou geo_linhas.",
+          "enum": ["texto", "numero", "data", "mes", "ano", "geo_ponto", "geo_linhas"]
+        },
+        "descricao": { "$ref": "#/definitions/textoPreenchido" },
+        "unidade": { "$ref": "#/definitions/textoPreenchido" },
+        "nulo": {
+          "description": "true se o campo aceita valor nulo. Vale para qualquer tipo.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

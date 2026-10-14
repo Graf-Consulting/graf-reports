@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "metodologia.schema.json",
+  "title": "Cabeçalho YAML da metodologia.md",
+  "description": "Estrutura do cabeçalho da metodologia.md (ADR-002; template em docs/template/metodologia.md). Marcadores do texto, ids citados, tabelas e campos existentes e a subseção de cada análise no corpo ficam na skill validar-entradas.",
+  "type": "object",
+  "required": ["analises"],
+  "additionalProperties": false,
+  "properties": {
+    "analises": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/analise" }
+    },
+    "leituras": {
+      "description": "Textos de leitura que não são conclusão. Pode ficar vazio.",
+      "type": "array",
+      "items": { "$ref": "#/definitions/textoComAnaliseOpcional" }
+    },
+    "conclusoes": {
+      "description": "Conclusões aprovadas pelo cientista. Pode ficar vazio.",
+      "type": "array",
+      "items": { "$ref": "#/definitions/conclusao" }
+    },
+    "ressalvas": {
+      "description": "Limites de leitura. Todas aparecem no report. Pode ficar vazio.",
+      "type": "array",
+      "items": { "$ref": "#/definitions/textoComAnaliseOpcional" }
+    }
+  },
+  "definitions": {
+    "textoPreenchido": { "type": "string", "minLength": 1 },
+    "idKebab": {
+      "description": "Minúsculas e números separados por hífen, por exemplo exposicao-destino.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "nomeTecnico": {
+      "description": "Nome de tabela ou campo do data.json.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "analise": {
+      "type": "object",
+      "required": ["id", "titulo", "tabelas"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/idKebab" },
+        "titulo": {
+          "description": "Igual ao título da subseção da análise no corpo.",
+          "$ref": "#/definitions/textoPreenchido"
+        },
+        "tabelas": {
+          "description": "Campos do data.json que a análise usa.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+          "additionalProperties": {
+            "type": "object",
+            "required": ["campos"],
+            "additionalProperties": false,
+            "properties": {
+              "campos": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "$ref": "#/definitions/nomeTecnico" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "valores": {
+      "description": "Um item por marcador {id} do texto.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "tabela", "campo", "formato"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Nome do marcador, sem as chaves.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "tabela": { "$ref": "#/definitions/nomeTecnico" },
+          "campo": { "$ref": "#/definitions/nomeTecnico" },
+          "filtro": {
+            "description": "Opcional. Sem filtro, a tabela deve ter uma linha só.",
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+            "additionalProperties": { "type": ["string", "number"] }
+          },
+          "formato": {
+            "description": "texto (valor como está) ou um formatador de lib/report/format.ts.",
+            "enum": ["texto", "compact", "fob", "cleanLabel"]
+          }
+        }
+      }
+    },
+    "textoComAnaliseOpcional": {
+      "type": "object",
+      "required": ["id", "texto"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/idKebab" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "texto": { "$ref": "#/definitions/textoPreenchido" },
+        "valores": { "$ref": "#/definitions/valores" }
+      }
+    },
+    "conclusao": {
+      "type": "object",
+      "required": ["id", "analise", "texto"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/idKebab" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "texto": { "$ref": "#/definitions/textoPreenchido" },
+        "valores": { "$ref": "#/definitions/valores" }
+      }
+    }
+  }
+}
