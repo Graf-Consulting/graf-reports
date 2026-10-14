@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "data_referencia": "AAAA-MM-DD",
+    "periodo": { "inicio": "AAAA-MM", "fim": "AAAA-MM" },
+    "fontes": [
+      { "nome": "<Instituição ou base>", "referencia": "<documento, tabela, view ou link>" }
+    ]
+  },
+  "tabelas": {
+    "<tabela>": {
+      "descricao": "<o que cada linha representa>",
+      "chave": ["<campo>"],
+      "campos": {
+        "<campo_texto>": { "tipo": "texto", "descricao": "<...>" },
+        "<campo_numero>": { "tipo": "numero", "unidade": "<km, US$, veículos/dia...>", "nulo": true, "descricao": "<...>" },
+        "<campo_data>": { "tipo": "data", "descricao": "AAAA-MM-DD" },
+        "<campo_mes>": { "tipo": "mes", "descricao": "AAAA-MM" },
+        "<campo_ano>": { "tipo": "ano", "descricao": "número inteiro, ex.: 2026" },
+        "<campo_ponto>": { "tipo": "geo_ponto", "descricao": "[latitude, longitude]" },
+        "<campo_linhas>": { "tipo": "geo_linhas", "descricao": "lista de linhas, cada linha uma lista de [latitude, longitude]" }
+      },
+      "linhas": [
+        {
+          "<campo_texto>": "...",
+          "<campo_numero>": 0,
+          "<campo_data>": "AAAA-MM-DD",
+          "<campo_mes>": "AAAA-MM",
+          "<campo_ano>": 2026,
+          "<campo_ponto>": [0, 0],
+          "<campo_linhas>": [[[0, 0], [0, 0]]]
+        }
+      ]
+    }
+  }
+}
