@@ -1,0 +1,186 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "guideline.schema.json",
+  "title": "Cabeçalho YAML do guideline.md",
+  "description": "Estrutura do cabeçalho do guideline.md (ADR-002; template em docs/template/guideline.md). Se os ids, tabelas e campos citados existem fica na skill validar-entradas.",
+  "type": "object",
+  "required": ["slug", "titulo", "subtitulo", "seo", "tabelas", "secoes", "componentes_novos"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "description": "Igual ao nome da pasta do estudo.",
+      "$ref": "#/definitions/idKebab"
+    },
+    "sobretitulo": { "$ref": "#/definitions/textoPreenchido" },
+    "titulo": { "$ref": "#/definitions/textoPreenchido" },
+    "subtitulo": { "$ref": "#/definitions/textoPreenchido" },
+    "seo": {
+      "type": "object",
+      "required": ["descricao"],
+      "additionalProperties": false,
+      "properties": {
+        "titulo": {
+          "description": "Opcional. Título da aba do navegador e dos buscadores. Sem ele, vale o titulo do report.",
+          "$ref": "#/definitions/textoPreenchido"
+        },
+        "descricao": { "type": "string", "minLength": 1, "maxLength": 160 }
+      }
+    },
+    "meta": {
+      "description": "Opcional. Informações do topo do report, além de fonte e período, que vêm do data.json.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rotulo", "leitura"],
+        "additionalProperties": false,
+        "properties": {
+          "rotulo": { "$ref": "#/definitions/textoPreenchido" },
+          "leitura": {
+            "description": "Id de leitura da metodologia com o texto exibido.",
+            "$ref": "#/definitions/idKebab"
+          }
+        }
+      }
+    },
+    "tabelas": {
+      "description": "Tabelas e campos do data.json que o report usa.",
+      "$ref": "#/definitions/citacaoTabelas"
+    },
+    "rotulos": {
+      "description": "Nome exibido de cada campo usado em eixo, legenda, filtro ou controle.",
+      "type": "object",
+      "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+      "additionalProperties": { "$ref": "#/definitions/textoPreenchido" }
+    },
+    "secoes": {
+      "description": "Seções em ordem de exibição.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/secao" }
+    },
+    "visual": {
+      "description": "Intenção visual, não código.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/textoPreenchido" }
+    },
+    "componentes_novos": {
+      "description": "Vazio se o kit basta.",
+      "type": "array",
+      "items": { "$ref": "#/definitions/componenteNovo" }
+    }
+  },
+  "definitions": {
+    "textoPreenchido": { "type": "string", "minLength": 1 },
+    "idKebab": {
+      "description": "Minúsculas e números separados por hífen, por exemplo exposicao-destino.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "nomeTecnico": {
+      "description": "Nome de tabela ou campo do data.json.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "listaIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/idKebab" }
+    },
+    "citacaoTabelas": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["campos"],
+        "additionalProperties": false,
+        "properties": {
+          "campos": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "#/definitions/nomeTecnico" }
+          }
+        }
+      }
+    },
+    "secao": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/idKebab" },
+        "sobretitulo": { "$ref": "#/definitions/textoPreenchido" },
+        "titulo": { "$ref": "#/definitions/textoPreenchido" },
+        "intro": { "$ref": "#/definitions/textoPreenchido" },
+        "analises": {
+          "description": "Análises da metodologia exibidas na seção.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/definitions/idKebab" },
+              "titulo": { "$ref": "#/definitions/textoPreenchido" },
+              "descricao": { "$ref": "#/definitions/textoPreenchido" },
+              "indicadores": {
+                "description": "Opcional. Um cartão por indicador: valor do campo, nome de rotulos e detalhe de uma leitura da metodologia.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["campo"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "campo": { "$ref": "#/definitions/nomeTecnico" },
+                    "detalhe": {
+                      "description": "Id de leitura da metodologia exibida abaixo do valor.",
+                      "$ref": "#/definitions/idKebab"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "leituras": { "$ref": "#/definitions/listaIds" },
+        "conclusoes": {
+          "description": "Conclusões da metodologia exibidas na seção.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/definitions/idKebab" },
+              "titulo": {
+                "description": "Opcional. Abertura em negrito da caixa, por exemplo Leitura prioritária.",
+                "$ref": "#/definitions/textoPreenchido"
+              },
+              "tipo": {
+                "description": "Opcional. Estilo da caixa; hoje o kit só tem destaque. Novos tipos entram quando o kit ganhar a variação.",
+                "enum": ["destaque"]
+              }
+            }
+          }
+        },
+        "ressalvas": { "$ref": "#/definitions/listaIds" }
+      }
+    },
+    "componenteNovo": {
+      "type": "object",
+      "required": ["nome", "motivo", "comportamento", "tabelas"],
+      "additionalProperties": false,
+      "properties": {
+        "nome": {
+          "description": "Nome em PascalCase.",
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        },
+        "motivo": { "$ref": "#/definitions/textoPreenchido" },
+        "comportamento": { "$ref": "#/definitions/textoPreenchido" },
+        "tabelas": { "$ref": "#/definitions/citacaoTabelas" }
+      }
+    }
+  }
+}

@@ -1,0 +1,70 @@
+---
+name: compor-report
+description: Traduz a metodologia.md e o guideline.md de um estudo numa composição explícita (app/reports/<slug>/composicao.json) que só usa componentes do kit ou componentes próprios do estudo, ligada aos dados do data.json e às análises da metodologia, validada por JSON Schema. Use depois de validar-entradas aprovar o conjunto.
+---
+
+# compor-report
+
+## Objetivo
+
+Produzir o `composicao.json` do estudo: quais blocos o report usa, em que ordem, ligados a quais dados e a qual análise da metodologia (ADR-004). É a única etapa da geração em que o agente decide a forma do report. Do arquivo em diante, tudo é determinístico (renderizador).
+
+## Quando usar
+
+Depois de `validar-entradas` aprovar o conjunto na mesma execução. Também roda de novo quando as entradas mudam, inclusive quando uma pessoa atualiza o `guideline.md` para atender a um pedido de ajuste (`aplicar-ajuste`).
+
+## Entrada
+
+- `content/reports/<slug>/data.json`, `metodologia.md` e `guideline.md`, já validados.
+- Catálogo do kit e schema da composição: `lib/report/schemas/composicao.schema.json`. Cada tipo de bloco em `definitions` é um item do catálogo, com a descrição do caso de uso e dos componentes que usa.
+- Guidelines da plataforma em `docs/guidelines/`.
+- Estudo de referência, como exemplo de composição: `app/reports/impacto-restricoes-ue/composicao.json` (PRD, RF-17).
+
+## Pré-requisitos
+
+Pare e diga o que falta se:
+
+- `validar-entradas` não aprovou o conjunto;
+- as guidelines da plataforma não existem (PRD, Q9 e Q14).
+
+## Procedimento
+
+A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduções e rótulos o renderizador lê no `guideline.md`; textos de análise, na `metodologia.md`; cores, em `lib/report/tokens.ts`. A composição só escolhe blocos e faz as ligações.
+
+1. **Identidade.** Preencha o `slug`, igual ao do guideline. O topo do report sai do guideline e do `metadata` do `data.json`, sem nada na composição.
+2. **Seções.** Crie uma seção por seção do `guideline.md`, com o mesmo `id` e na mesma ordem.
+3. **Blocos.** Para cada análise, leitura, conclusão e ressalva que a seção do guideline cita, escolha o bloco do catálogo que atende à intenção descrita no corpo do guideline e registre:
+   - o tipo do bloco e a posição na seção (blocos lado a lado entram num `grupo`);
+   - a análise da metodologia que o bloco atende (RF-08);
+   - o vínculo com os dados: tabela e campos, todos existentes no `data.json` e usados pela análise;
+   - interação: opções de dimensão, métrica e filtro, com a inicial em primeiro;
+   - top N e formato de exibição de cada campo (`texto` ou um formatador de `lib/report/format.ts`);
+   - para `indicadores`, os mesmos campos e a mesma ordem de `indicadores` no guideline;
+   - os ids das leituras, conclusões e ressalvas que o bloco exibe.
+   Tudo o que a seção do guideline cita precisa aparecer em algum bloco da seção.
+4. **Ressalvas.** Toda ressalva da metodologia entra no report (ADR-002):
+   - citada numa seção do guideline: nessa seção;
+   - não citada e ligada a uma análise: na seção que exibe essa análise;
+   - não citada e sem análise: num bloco ao final do report.
+5. **Componentes próprios.** Reserve o bloco na composição e deixe a criação do código para `gerar-componente` quando:
+   - o guideline declarar o componente em `componentes_novos`; ou
+   - o guideline pedir algo que nenhum componente do kit cobre.
+6. **Validação.** Valide o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
+7. **Proteção de ajustes manuais.** Se `app/reports/<slug>/composicao.json` já existir, compare com a nova versão. Liste o que mudou e sinalize qualquer diferença que não venha de mudança nas entradas. Uma diferença assim pode ser ajuste manual do desenvolvedor e não pode ser descartada sem aviso (RF-16).
+
+## Saída
+
+- `app/reports/<slug>/composicao.json`, válido contra o esquema.
+- Um resumo legível para o PR: seções, blocos, os dados de cada bloco, a análise que justifica cada bloco e os componentes próprios previstos (RF-05).
+
+## Regras
+
+- Use só componentes do kit ou componentes próprios do estudo. Nada de layout arbitrário (ADR-004).
+- Prefira sempre o kit. Crie um componente próprio só quando nenhum componente do kit atende ao pedido (ADR-001) e diga no resumo por que o kit não cobria.
+- Nunca altere o `guideline.md`, a `metodologia.md` ou o `data.json`. Se o guideline precisar mudar, aponte os trechos para uma pessoa atualizar.
+- Não faça cálculos nem agregações. Todo número vem do `data.json` como está (ADR-002).
+- Rótulos que não chegaram limpos: se um campo de texto exibido como rótulo, legenda ou opção de controle tem valores vazios ou com código no início, aplique a função de limpeza de `lib/report/format.ts` (hoje `cleanLabel`) como formato desse campo na composição. Registre no resumo do PR quais campos precisaram de limpeza, para o cientista corrigir na próxima entrega (ADR-003). Não limpe valores que entram em conta, filtro ou chave, só a exibição.
+- Não redija textos (PRD, Q13; RF-09). O texto de análise vem das leituras e conclusões da `metodologia.md`, referenciadas pelo id; o renderizador busca o texto e preenche os marcadores. Os textos de interface vêm do `guideline.md`. Se faltar um texto obrigatório, como o rótulo de um campo exibido num eixo ou controle, pare e aponte o que precisa ser escrito.
+- Não coloque estilo visual (cores, espaçamentos) nem lógica na composição. Estilo é do kit e agregação é dos dados (ADR-004).
+- Não crie blocos que o guideline não pede. Para a mesma entrada, a composição deve sair o mais parecida possível (RNF-04, backlog V8).
+- Não escreva `page.tsx` nem componentes. Essas tarefas são de `montar-pagina` e `gerar-componente`.
