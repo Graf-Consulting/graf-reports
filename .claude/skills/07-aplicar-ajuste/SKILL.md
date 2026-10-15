@@ -1,9 +1,9 @@
 ---
-name: aplicar-ajuste
+name: 07-aplicar-ajuste
 description: Regenera um estudo depois de um pedido de ajuste da homologação, a partir do guideline.md atualizado por uma pessoa, e entrega a nova versão no mesmo PR. O agente nunca altera o guideline.md. Se o pedido exigir mudança no guideline e ela ainda não tiver sido feita, aponta os trechos que uma pessoa precisa atualizar. Use a cada pedido de ajuste de um stakeholder sobre um estudo que já tem PR aberto.
 ---
 
-# aplicar-ajuste
+# 07-aplicar-ajuste
 
 ## Objetivo
 
@@ -30,7 +30,7 @@ A cada pedido de ajuste do stakeholder sobre um estudo com PR aberto.
 2. **Confira se o guideline já foi atualizado.**
    - Se uma pessoa já alterou o `guideline.md` para atender ao pedido, siga para o passo 3.
    - Se não alterou, pare. Aponte os trechos do `guideline.md` que precisam mudar e o que o pedido exige em cada um, para uma pessoa fazer a mudança. Não altere o arquivo.
-3. **Regenere.** A nova geração passa pelas skills, nesta ordem: `validar-entradas`, `compor-report`, `gerar-componente` (se o ajuste pedir algo que o kit não cobre) e `conferir-report`. Siga as instruções de cada uma e não repita as regras delas aqui.
+3. **Regenere.** A nova geração passa pelas skills, nesta ordem: `01-validar-entradas`, `02-compor-report`, `03-gerar-componente` (se o ajuste pedir algo que o kit não cobre) e `05-conferir-report`. Siga as instruções de cada uma e não repita as regras delas aqui.
 4. **Nova versão.** Faça um commit no mesmo branch do PR. As versões anteriores ficam consultáveis no histórico do PR (RF-14).
 
 ## Saída

@@ -1,9 +1,9 @@
 ---
-name: validar-entradas
+name: 01-validar-entradas
 description: Valida o conjunto de entrada de um estudo (data.json, metodologia.md e guideline.md em content/reports/<slug>/) contra os esquemas e entre si, e devolve a lista de erros ou a aprovação. Use sempre, antes de qualquer outra etapa da geração de um estudo.
 ---
 
-# validar-entradas
+# 01-validar-entradas
 
 ## Objetivo
 
@@ -41,7 +41,7 @@ Os schemas cobrem a estrutura de cada arquivo isolado. As checagens entre arquiv
    - Confira se é um JSON válido, com `metadata` (`data_referencia` e `fontes`) e `tabelas`.
    - Cada tabela tem `descricao`, `chave`, `campos` e `linhas`.
    - A `chave` é obrigatória em tabela com mais de uma linha. Os campos dela existem em `campos`, e ela não se repete entre linhas.
-   - Campos de texto com valores vazios ou com um código numérico no início (por exemplo `0927800 - ITAJAI`) geram um **aviso**, não um erro: o ideal é que os rótulos cheguem limpos, e `compor-report` aplica a limpeza se for preciso.
+   - Campos de texto com valores vazios ou com um código numérico no início (por exemplo `0927800 - ITAJAI`) geram um **aviso**, não um erro: o ideal é que os rótulos cheguem limpos, e `02-compor-report` aplica a limpeza se for preciso.
    - As linhas só têm campos descritos, e cada valor segue o formato do tipo: `texto` (texto), `numero` (número), `data` (AAAA-MM-DD), `mes` (AAAA-MM), `ano` (número inteiro), `geo_ponto` ([latitude, longitude]) e `geo_linhas` (lista de linhas de [latitude, longitude]).
    - Valor nulo só aparece em campo com `nulo: true`, em qualquer tipo.
 3. **`guideline.md`.**

@@ -23,14 +23,14 @@ flowchart TD
 
   subgraph G["2 · Geração: workflow no próprio PR"]
     G0{{"Mudou algo em<br/>content/reports/slug/?"}}
-    G1["validar-entradas"]
+    G1["01-validar-entradas"]
     G2{"Conjunto válido?"}
-    G3["compor-report<br/>gera composicao.json"]
+    G3["02-compor-report<br/>gera composicao.json"]
     G4{"Precisa de componente<br/>fora do kit?"}
-    G5["gerar-componente"]
+    G5["03-gerar-componente"]
     G6{"Primeira geração<br/>do estudo?"}
-    G7["montar-pagina<br/>gera page.tsx"]
-    G8["conferir-report<br/>lint, typecheck, build, números e textos"]
+    G7["04-montar-pagina<br/>gera page.tsx"]
+    G8["05-conferir-report<br/>lint, typecheck, build, números e textos"]
     G9{"Conferência aprovada?"}
     G10["Commit no PR e resumo<br/>na descrição do PR"]
     G0 -- sim --> G1 --> G2
@@ -47,13 +47,13 @@ flowchart TD
     H1["Vercel atualiza o preview do PR"]
     H2["Desenvolvedor revisa composição e código"]:::h
     H3{"Stakeholder aprova<br/>o preview?"}:::h
-    H4["aplicar-ajuste classifica o pedido<br/>e aponta o que mudar"]
+    H4["07-aplicar-ajuste classifica o pedido<br/>e aponta o que mudar"]
     H1 --> H2 --> H3
     H3 -- "não: pedido de ajuste" --> H4
   end
 
   subgraph P["4 · Publicação"]
-    P1["Aprovação registrada<br/>(forma em aberto, Q16)"]:::h
+    P1["Aprovação registrada no PR<br/>(opções no ADR-006)"]:::h
     P2["Merge humano na main"]:::h
     P3["Vercel publica em produção"]
     P1 --> P2 --> P3
@@ -88,9 +88,9 @@ flowchart TD
 flowchart TD
   C1["Cientista entrega os três arquivos"]:::h
   C2["Desenvolvedor cria a branch e coloca os arquivos<br/>em content/reports/slug/"]:::h
-  C3["Desenvolvedor roda as skills no Claude Code local:<br/>validar-entradas → compor-report → gerar-componente →<br/>montar-pagina → conferir-report"]:::h
+  C3["Desenvolvedor roda as skills no Claude Code local:<br/>01-validar-entradas → 02-compor-report → 03-gerar-componente →<br/>04-montar-pagina → 05-conferir-report"]:::h
   C4{"Tudo aprovado?"}
-  C5["abrir-pr: commit, push e PR para a main"]
+  C5["06-abrir-pr: commit, push e PR para a main"]
   C6["Vercel gera o preview do PR"]
   C7["Revisão, homologação e publicação<br/>iguais às etapas 3 e 4 do modo A"]:::h
   C1 --> C2 --> C3 --> C4
@@ -108,5 +108,5 @@ No modo C, quem opera as skills é o desenvolvedor, e o PR só é aberto depois 
 | Quem entrega as entradas no repositório | Cientista, pela interface do GitHub | Desenvolvedor |
 | Onde o agente roda | Workflow do GitHub, no PR | Claude Code na máquina do desenvolvedor |
 | Quando o PR é aberto | Na entrega, antes da geração | Depois da geração aprovada |
-| Papel da skill `abrir-pr` | Atualizar a descrição do PR existente | Criar a branch e o PR |
+| Papel da skill `06-abrir-pr` | Atualizar a descrição do PR existente | Criar a branch e o PR |
 | Credenciais no GitHub | Necessárias | Não |

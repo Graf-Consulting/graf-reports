@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "guideline.schema.json",
   "title": "Cabeçalho YAML do guideline.md",
-  "description": "Estrutura do cabeçalho do guideline.md (ADR-002; template em docs/template/guideline.md). Se os ids, tabelas e campos citados existem fica na skill validar-entradas.",
+  "description": "Estrutura do cabeçalho do guideline.md (ADR-002; template em docs/template/guideline.md). Se os ids, tabelas e campos citados existem fica na skill 01-validar-entradas.",
   "type": "object",
   "required": ["slug", "titulo", "subtitulo", "seo", "tabelas", "secoes", "componentes_novos"],
   "additionalProperties": false,

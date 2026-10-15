@@ -1,9 +1,9 @@
 ---
-name: compor-report
-description: Traduz a metodologia.md e o guideline.md de um estudo numa composição explícita (app/reports/<slug>/composicao.json) que só usa componentes do kit ou componentes próprios do estudo, ligada aos dados do data.json e às análises da metodologia, validada por JSON Schema. Use depois de validar-entradas aprovar o conjunto.
+name: 02-compor-report
+description: Traduz a metodologia.md e o guideline.md de um estudo numa composição explícita (app/reports/<slug>/composicao.json) que só usa componentes do kit ou componentes próprios do estudo, ligada aos dados do data.json e às análises da metodologia, validada por JSON Schema. Use depois de 01-validar-entradas aprovar o conjunto.
 ---
 
-# compor-report
+# 02-compor-report
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Produzir o `composicao.json` do estudo: quais blocos o report usa, em que ordem,
 
 ## Quando usar
 
-Depois de `validar-entradas` aprovar o conjunto na mesma execução. Também roda de novo quando as entradas mudam, inclusive quando uma pessoa atualiza o `guideline.md` para atender a um pedido de ajuste (`aplicar-ajuste`).
+Depois de `01-validar-entradas` aprovar o conjunto na mesma execução. Também roda de novo quando as entradas mudam, inclusive quando uma pessoa atualiza o `guideline.md` para atender a um pedido de ajuste (`07-aplicar-ajuste`).
 
 ## Entrada
 
@@ -24,7 +24,7 @@ Depois de `validar-entradas` aprovar o conjunto na mesma execução. Também rod
 
 Pare e diga o que falta se:
 
-- `validar-entradas` não aprovou o conjunto;
+- `01-validar-entradas` não aprovou o conjunto;
 - as guidelines da plataforma não existem (PRD, Q9 e Q14).
 
 ## Procedimento
@@ -46,7 +46,7 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
    - citada numa seção do guideline: nessa seção;
    - não citada e ligada a uma análise: na seção que exibe essa análise;
    - não citada e sem análise: num bloco ao final do report.
-5. **Componentes próprios.** Reserve o bloco na composição e deixe a criação do código para `gerar-componente` quando:
+5. **Componentes próprios.** Reserve o bloco na composição e deixe a criação do código para `03-gerar-componente` quando:
    - o guideline declarar o componente em `componentes_novos`; ou
    - o guideline pedir algo que nenhum componente do kit cobre.
 6. **Validação.** Valide o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
@@ -67,4 +67,4 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
 - Não redija textos (PRD, Q13; RF-09). O texto de análise vem das leituras e conclusões da `metodologia.md`, referenciadas pelo id; o renderizador busca o texto e preenche os marcadores. Os textos de interface vêm do `guideline.md`. Se faltar um texto obrigatório, como o rótulo de um campo exibido num eixo ou controle, pare e aponte o que precisa ser escrito.
 - Não coloque estilo visual (cores, espaçamentos) nem lógica na composição. Estilo é do kit e agregação é dos dados (ADR-004).
 - Não crie blocos que o guideline não pede. Para a mesma entrada, a composição deve sair o mais parecida possível (RNF-04, backlog V8).
-- Não escreva `page.tsx` nem componentes. Essas tarefas são de `montar-pagina` e `gerar-componente`.
+- Não escreva `page.tsx` nem componentes. Essas tarefas são de `04-montar-pagina` e `03-gerar-componente`.
