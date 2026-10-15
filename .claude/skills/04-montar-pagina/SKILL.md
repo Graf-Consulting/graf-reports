@@ -1,9 +1,9 @@
 ---
-name: montar-pagina
-description: Cria a página fina de um estudo (app/reports/<slug>/page.tsx), que lê a composição e as entradas do estudo no build, declara os metadados de SEO do guideline e chama o renderizador, sem layout escrito à mão. Use na primeira geração do estudo, depois de compor-report.
+name: 04-montar-pagina
+description: Cria a página fina de um estudo (app/reports/<slug>/page.tsx), que lê a composição e as entradas do estudo no build, declara os metadados de SEO do guideline e chama o renderizador, sem layout escrito à mão. Use na primeira geração do estudo, depois de 02-compor-report.
 ---
 
-# montar-pagina
+# 04-montar-pagina
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Criar a rota do estudo. A página lê os quatro arquivos do estudo, declara os m
 
 ## Quando usar
 
-Na primeira geração do estudo, depois de `compor-report` produzir um `composicao.json` válido. Em regenerações e ajustes, a página não muda; o que muda é a composição ou as entradas.
+Na primeira geração do estudo, depois de `02-compor-report` produzir um `composicao.json` válido. Em regenerações e ajustes, a página não muda; o que muda é a composição ou as entradas.
 
 Esta etapa é determinística e pode virar script (ADR-005).
 

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "metodologia.schema.json",
   "title": "Cabeçalho YAML da metodologia.md",
-  "description": "Estrutura do cabeçalho da metodologia.md (ADR-002; template em docs/template/metodologia.md). Marcadores do texto, ids citados, tabelas e campos existentes e a subseção de cada análise no corpo ficam na skill validar-entradas.",
+  "description": "Estrutura do cabeçalho da metodologia.md (ADR-002; template em docs/template/metodologia.md). Marcadores do texto, ids citados, tabelas e campos existentes e a subseção de cada análise no corpo ficam na skill 01-validar-entradas.",
   "type": "object",
   "required": ["analises"],
   "additionalProperties": false,

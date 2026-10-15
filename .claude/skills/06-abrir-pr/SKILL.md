@@ -1,9 +1,9 @@
 ---
-name: abrir-pr
-description: Cria o branch e o pull request de um estudo gerado, com um resumo do que foi gerado, o resultado da conferência e o link do preview da Vercel. Use ao fim da geração, depois de conferir-report aprovar o estudo.
+name: 06-abrir-pr
+description: Cria o branch e o pull request de um estudo gerado, com um resumo do que foi gerado, o resultado da conferência e o link do preview da Vercel. Use ao fim da geração, depois de 05-conferir-report aprovar o estudo.
 ---
 
-# abrir-pr
+# 06-abrir-pr
 
 ## Objetivo
 
@@ -11,16 +11,16 @@ Levar o estudo gerado para revisão do desenvolvedor e homologação no preview 
 
 ## Quando usar
 
-Ao fim da primeira geração do estudo, depois de `conferir-report` aprovar. Ajustes posteriores entram no mesmo PR por `aplicar-ajuste`.
+Ao fim da primeira geração do estudo, depois de `05-conferir-report` aprovar. Ajustes posteriores entram no mesmo PR por `07-aplicar-ajuste`.
 
 Esta etapa é candidata a script determinístico (ADR-005; PRD, Q11).
 
 ## Entrada
 
 - O estudo gerado em `app/reports/<slug>/` e o conjunto em `content/reports/<slug>/`.
-- O resumo da composição produzido por `compor-report`.
-- O resumo dos componentes próprios produzido por `gerar-componente`, se houver.
-- O relatório de conferência aprovado de `conferir-report`.
+- O resumo da composição produzido por `02-compor-report`.
+- O resumo dos componentes próprios produzido por `03-gerar-componente`, se houver.
+- O relatório de conferência aprovado de `05-conferir-report`.
 
 ## Pré-requisitos
 

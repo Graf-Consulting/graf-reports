@@ -76,7 +76,7 @@ Hoje existe um único estudo, `impacto-restricoes-ue`, já no formato da esteira
 
 ## Esteira de publicação (decidida, em implementação)
 
-O objetivo é que um estudo saia das entradas do cientista para um PR com preview sem codificação manual. O PRD, os ADRs 002 a 005 (`docs/adr/`) e o fluxo em `docs/fluxo-da-esteira.md` descrevem a esteira. O renderizador fica em `lib/report/renderizador/`, e toda página de estudo segue o modelo da skill `montar-pagina`.
+O objetivo é que um estudo saia das entradas do cientista para um PR com preview sem codificação manual. O PRD, os ADRs 002 a 005 (`docs/adr/`) e o fluxo em `docs/fluxo-da-esteira.md` descrevem a esteira. O renderizador fica em `lib/report/renderizador/`, e toda página de estudo segue o modelo da skill `04-montar-pagina`.
 
 ### Entradas do cientista: `content/reports/<slug>/` (ADR-002)
 

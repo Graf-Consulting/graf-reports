@@ -1,9 +1,9 @@
 ---
-name: conferir-report
+name: 05-conferir-report
 description: Confere um estudo gerado antes do PR. Roda lint, typecheck e build, valida a composição e confere números e textos exibidos contra o data.json e a metodologia.md, além do isolamento entre estudos. Produz um relatório de conferência. Use antes de abrir ou atualizar o PR do estudo.
 ---
 
-# conferir-report
+# 05-conferir-report
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Garantir que o estudo gerado compila, respeita a arquitetura e mostra só o que 
 
 ## Quando usar
 
-Antes de abrir o PR e a cada nova versão gerada por `aplicar-ajuste`.
+Antes de abrir o PR e a cada nova versão gerada por `07-aplicar-ajuste`.
 
 Esta etapa é candidata a script determinístico (ADR-005; PRD, Q11). Com os marcadores, a conferência de textos também é mecânica: comparar o texto exibido com o texto da fonte, já com os valores preenchidos.
 
@@ -27,7 +27,7 @@ Execute as checagens em dois grupos e registre cada uma como aprovada ou reprova
 
 ### Checagem técnica
 
-1. **Composição.** Valide `composicao.json` contra `lib/report/schemas/composicao.schema.json` e contra as entradas, com as mesmas checagens do passo de validação de `compor-report` (ADR-004, consumo no build, passo 2).
+1. **Composição.** Valide `composicao.json` contra `lib/report/schemas/composicao.schema.json` e contra as entradas, com as mesmas checagens do passo de validação de `02-compor-report` (ADR-004, consumo no build, passo 2).
 2. **Código.** Rode `npm run lint`, `npx tsc --noEmit` e `npm run build`. Confira se `out/reports/<slug>.html` foi gerado.
 3. **Isolamento.** Confira no diff:
    - nenhum arquivo fora de `app/reports/<slug>/` importa `content/reports/<slug>/` (ADR-003);
@@ -48,7 +48,7 @@ Um relatório de conferência com:
 
 - resultado geral: aprovado ou reprovado;
 - a checagem técnica e a de conteúdo em seções separadas, cada item com resultado e evidência (comando e trecho de saída, ou o valor exibido e o valor no `data.json`);
-- para cada reprovação, a etapa que precisa ser refeita (`compor-report`, `gerar-componente`, `montar-pagina`) ou o erro na entrada que o cientista precisa corrigir;
+- para cada reprovação, a etapa que precisa ser refeita (`02-compor-report`, `03-gerar-componente`, `04-montar-pagina`) ou o erro na entrada que o cientista precisa corrigir;
 - as checagens que ainda não fazem parte da conferência: regressão visual e acessibilidade (PRD, Q10 e Q17; backlog V7).
 
 Um relatório reprovado impede a abertura do PR.

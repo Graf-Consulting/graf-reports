@@ -9,9 +9,10 @@ Cada ADR registra uma decisão, o contexto, as alternativas consideradas e as co
 | [ADR-003](ADR-003-estrutura-de-pastas.md) | Entradas do estudo em `content/reports/<slug>/`, código gerado em `app/reports/<slug>/` | Vigente |
 | [ADR-004](ADR-004-composicao-do-report.md) | O report é descrito num `composicao.json` validado por schema e montado por um renderizador determinístico a partir do catálogo de blocos do kit | Vigente |
 | [ADR-005](ADR-005-skills-do-agente.md) | O agente trabalha com sete skills, uma por etapa, em `.claude/skills/`, e nunca altera as entradas do cientista | Vigente |
+| [ADR-006](ADR-006-homologacao-e-publicacao.md) | Aviso de homologação no Teams, registro da aprovação no PR e publicação: Power Automate ou GitHub Actions | Em discussão |
 
 ## Como ler
 
 - **ADR-001** é a base: por que existe um único site de estudos.
-- **ADR-002 a ADR-005** descrevem a esteira de publicação automatizada. Leia na ordem: o que entra (002), onde fica (003), como vira página (004) e quem executa cada etapa (005).
+- **ADR-002 a ADR-006** descrevem a esteira de publicação automatizada. Leia na ordem: o que entra (002), onde fica (003), como vira página (004), quem executa cada etapa (005) e como o estudo é homologado e publicado (006).
 - O caminho completo, da entrega à produção, está em [fluxo-da-esteira.md](../fluxo-da-esteira.md).

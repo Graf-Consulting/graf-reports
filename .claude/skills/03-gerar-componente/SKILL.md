@@ -1,9 +1,9 @@
 ---
-name: gerar-componente
+name: 03-gerar-componente
 description: Cria um componente próprio de um estudo em app/reports/<slug>/components/ quando o estudo precisa de algo que o kit não cobre, seguindo as guidelines da plataforma e os componentes do kit como exemplo, e o registra na composição. A necessidade vem de componentes_novos no guideline.md ou de algo no guideline que nenhum componente do kit cobre.
 ---
 
-# gerar-componente
+# 03-gerar-componente
 
 ## Objetivo
 
@@ -14,7 +14,7 @@ Atender a uma necessidade de apresentação que o kit não cobre, com um compone
 Quando o estudo precisa de um componente que não existe no kit:
 
 - o cabeçalho do `guideline.md` tem itens em `componentes_novos`;
-- `compor-report` reservou um bloco porque o kit não cobre o que o guideline pede, inclusive depois de uma atualização do guideline para atender a um ajuste.
+- `02-compor-report` reservou um bloco porque o kit não cobre o que o guideline pede, inclusive depois de uma atualização do guideline para atender a um ajuste.
 
 Roda depois de o bloco estar reservado na composição.
 
