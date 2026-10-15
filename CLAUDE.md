@@ -11,9 +11,11 @@ npm run dev          # servidor local
 npm run lint         # ESLint (config do Next)
 npx tsc --noEmit     # typecheck (não há script próprio)
 npm run build        # export estático em out/; precisa passar antes de qualquer PR
+npm run validar      # valida entradas e composição de todos os estudos (scripts/validar.mjs)
+npm run validar -- <slug>   # valida um estudo
 ```
 
-Não há testes automatizados. Antes de abrir PR, rode lint, typecheck e build.
+Não há testes automatizados. Antes de abrir PR, rode lint, typecheck, build e `npm run validar`.
 
 Para conferir um estudo localmente, use `npm run dev` e acesse `/reports/<slug>`. No build, a rota vira `out/reports/<slug>.html`.
 
@@ -102,10 +104,10 @@ Os templates dos três arquivos estão em `docs/template/` e os schemas que os v
 4. Use só componentes do kit ou componentes próprios declarados no `guideline.md`. Não monte layout arbitrário.
 5. Pedidos de ajuste viram mudança no `guideline.md` e nova geração, nunca edição solta na página.
 6. Não altere as entradas do cientista. Se uma delas estiver errada, aponte o erro no PR.
-7. Antes do PR, rode lint, typecheck e build e confira os números exibidos contra o `data.json`.
+7. Antes do PR, rode lint, typecheck, build e `npm run validar -- <slug>` e confira os números exibidos contra o `data.json`.
 
 ## Pendências conhecidas
 
 - As questões abertas estão no PRD (Q9 e Q14 a Q23). Entre elas estão as guidelines de design, o acesso ao preview e o registro de aprovação. Não decida nenhuma delas no código sem registrar a decisão no PRD (seção 11) ou em ADR.
 - A esteira roda hoje no modo piloto: o desenvolvedor executa as skills numa sessão local do Claude Code. A meta é o workflow no PR (`docs/fluxo-da-esteira.md`).
-- Ainda não há script no repositório que rode os schemas; o `ajv` só existe como dependência indireta. O `js-yaml` já é dependência declarada, usada pelo renderizador.
+- A validação (`scripts/validacao.mjs`) e as skills descrevem as mesmas regras. Ao mudar uma regra, mude as duas no mesmo PR, junto com o schema e o template, se for o caso.
