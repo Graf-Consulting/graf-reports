@@ -27,7 +27,7 @@ Execute as checagens em dois grupos e registre cada uma como aprovada ou reprova
 
 ### Checagem técnica
 
-1. **Composição.** Valide `composicao.json` contra `lib/report/schemas/composicao.schema.json` e contra as entradas, com as mesmas checagens do passo de validação de `02-compor-report` (ADR-004, consumo no build, passo 2).
+1. **Entradas e composição.** Rode `npm run validar -- <slug>`. Ele valida as entradas e o `composicao.json` contra os schemas e entre si (ADR-004, consumo no build, passo 2). Registre os erros e os avisos.
 2. **Código.** Rode `npm run lint`, `npx tsc --noEmit` e `npm run build`. Confira se `out/reports/<slug>.html` foi gerado.
 3. **Isolamento.** Confira no diff:
    - nenhum arquivo fora de `app/reports/<slug>/` importa `content/reports/<slug>/` (ADR-003);

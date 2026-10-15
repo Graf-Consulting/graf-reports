@@ -277,6 +277,8 @@ A validação confere cada uma dessas ligações. Se um id, tabela ou campo cita
 
 ## 8. Antes de entregar
 
+Se você tiver o projeto instalado na sua máquina, rode `npm run validar -- <slug>`. O comando faz todas as checagens desta lista e das seções anteriores e mostra cada erro com o arquivo e o lugar. Se não tiver, quem roda é o desenvolvedor, na entrega.
+
 - [ ] A pasta e o `slug` do guideline têm o mesmo nome.
 - [ ] O `data.json` tem `metadata` (data de referência e fontes) e `tabelas`, cada uma com descrição, campos tipados e linhas.
 - [ ] Todo número exibido está pronto no `data.json`, inclusive percentuais.

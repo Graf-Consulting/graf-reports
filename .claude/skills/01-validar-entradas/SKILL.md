@@ -34,6 +34,12 @@ O formato de cada arquivo segue os templates em `docs/template/` (PRD, Q7 e Q8) 
 
 Os schemas cobrem a estrutura de cada arquivo isolado. As checagens entre arquivos e as que dependem do conteúdo (marcadores, ids citados, tipo de cada valor, chave única) são feitas pelos passos abaixo.
 
+## Como executar
+
+Rode `npm run validar -- <slug>`. O script (`scripts/validar.mjs`) aplica os schemas e todas as checagens dos passos abaixo, e também valida o `composicao.json`, se ele já existir. Ele lista cada erro e cada aviso com arquivo, local e mensagem, e termina com código 1 se houver erro.
+
+Use o resultado do script como a saída desta skill. Os passos abaixo descrevem o que ele confere; se o script e esta skill divergirem, a regra vale como está aqui, e o script precisa ser corrigido.
+
 ## Procedimento
 
 1. **Presença.** Confira se os três arquivos existem e não estão vazios.

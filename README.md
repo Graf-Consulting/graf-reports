@@ -12,6 +12,8 @@ npm run dev          # servidor local; o estudo fica em /reports/<slug>
 npm run lint
 npx tsc --noEmit     # typecheck
 npm run build        # export estático em out/
+npm run validar      # valida as entradas e a composição de todos os estudos
+npm run validar -- impacto-restricoes-ue   # valida um estudo
 ```
 
 Todo push na `main` publica em produção na Vercel. As mudanças entram por PR, que ganha um preview da Vercel.

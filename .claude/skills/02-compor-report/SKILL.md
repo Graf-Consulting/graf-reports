@@ -49,7 +49,7 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
 5. **Componentes próprios.** Reserve o bloco na composição e deixe a criação do código para `03-gerar-componente` quando:
    - o guideline declarar o componente em `componentes_novos`; ou
    - o guideline pedir algo que nenhum componente do kit cobre.
-6. **Validação.** Valide o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
+6. **Validação.** Rode `npm run validar -- <slug>` e corrija a composição até ela passar. O script valida o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
 7. **Proteção de ajustes manuais.** Se `app/reports/<slug>/composicao.json` já existir, compare com a nova versão. Liste o que mudou e sinalize qualquer diferença que não venha de mudança nas entradas. Uma diferença assim pode ser ajuste manual do desenvolvedor e não pode ser descartada sem aviso (RF-16).
 
 ## Saída
