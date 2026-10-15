@@ -1,0 +1,97 @@
+name: Gerar estudo
+
+# Modo A da esteira (docs/fluxo-da-esteira.md): quando um push no PR muda as
+# entradas de um estudo em content/reports/<slug>/, o agente roda as skills
+# 01 a 06 e faz commit da composição e da página no próprio PR.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'content/reports/**'
+
+concurrency:
+  group: gerar-estudo-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  detectar:
+    # O filtro "paths" olha o diff inteiro do PR. Este job olha só o último push,
+    # para que os commits do próprio agente (que só mexem em app/) não gerem de novo.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      slugs: ${{ steps.slugs.outputs.slugs }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: slugs
+        env:
+          ACAO: ${{ github.event.action }}
+          ANTES: ${{ github.event.before }}
+          DEPOIS: ${{ github.event.pull_request.head.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$ACAO" = "synchronize" ] && [ -n "$ANTES" ] && git cat-file -e "$ANTES" 2>/dev/null; then
+            DE="$ANTES"
+          else
+            DE="$BASE"
+          fi
+          SLUGS=$(git diff --name-only "$DE" "$DEPOIS" -- content/reports/ | cut -d/ -f3 | sort -u | tr '\n' ' ' | xargs)
+          echo "Estudos com entradas alteradas: ${SLUGS:-nenhum}"
+          echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
+
+  gerar:
+    needs: detectar
+    if: needs.detectar.outputs.slugs != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Rodar as skills da esteira
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Você é o agente de geração da esteira de estudos deste repositório, no modo A
+            (docs/fluxo-da-esteira.md). Siga o CLAUDE.md e as skills em .claude/skills/.
+
+            PR: #${{ github.event.pull_request.number }}, branch ${{ github.event.pull_request.head.ref }}.
+            Estudos com entradas alteradas neste push: ${{ needs.detectar.outputs.slugs }}
+
+            Para cada slug, siga as skills nesta ordem:
+            1. 01-validar-entradas. Se reprovar, comente no PR os erros e avisos e pare este estudo.
+            2. 02-compor-report.
+            3. 03-gerar-componente, só se o kit não cobrir o que o guideline pede.
+            4. 04-montar-pagina, só se app/reports/<slug>/page.tsx ainda não existir.
+            5. 05-conferir-report. Se reprovar, comente no PR o relatório e pare este estudo.
+            6. Faça commit só dos arquivos de app/reports/<slug>/, com mensagem em português
+               no padrão Conventional Commits, e dê push na branch do PR.
+            7. 06-abrir-pr no modo A: atualize a descrição do PR com o resumo da geração.
+
+            Nunca altere content/, components/, lib/, app/layout.tsx nem app/globals.css.
+            Nunca faça merge.
+          claude_args: >-
+            --allowedTools
+            "Read,Write,Edit,Glob,Grep,Bash(npm run validar:*),Bash(npm run lint),Bash(npx tsc --noEmit),Bash(npm run build),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh pr edit:*)"

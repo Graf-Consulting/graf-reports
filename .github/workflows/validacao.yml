@@ -1,0 +1,39 @@
+name: Validação
+
+# Roda em todo PR para a main: lint, typecheck, validação dos estudos e build.
+# Deve ser exigido pela proteção da main (PRD, RF-13).
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: validacao-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Validação dos estudos (entradas e composição)
+        run: npm run validar
+
+      - name: Build estático
+        run: npm run build
