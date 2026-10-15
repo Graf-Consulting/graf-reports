@@ -72,7 +72,7 @@ Hoje existe um único estudo, `impacto-restricoes-ue`, já no formato da esteira
 
 - Todo push na `main` publica em produção na Vercel. Nunca faça push direto na `main`. Toda mudança entra por PR.
 - Cada PR ganha um preview da Vercel, que é onde os stakeholders validam o estudo.
-- Os PRs passam pelo workflow Claude Code Review (`.github/workflows/`).
+- Os PRs para a `main` passam pelos workflows `Validação` (lint, typecheck, `npm run validar` e build) e Claude Code Review. PRs que mudam `content/reports/` também passam pelo `Gerar estudo` (`.github/workflows/`).
 - Commits seguem Conventional Commits em português, por exemplo `feat: adiciona estudo <slug>`, `fix:`, `refactor:` e `docs:`.
 - O merge é sempre humano.
 
@@ -109,5 +109,6 @@ Os templates dos três arquivos estão em `docs/template/` e os schemas que os v
 ## Pendências conhecidas
 
 - As questões abertas estão no PRD (Q9 e Q14 a Q23). Entre elas estão as guidelines de design, o acesso ao preview e o registro de aprovação. Não decida nenhuma delas no código sem registrar a decisão no PRD (seção 11) ou em ADR.
-- A esteira roda hoje no modo piloto: o desenvolvedor executa as skills numa sessão local do Claude Code. A meta é o workflow no PR (`docs/fluxo-da-esteira.md`).
+- A esteira roda hoje no modo piloto: o desenvolvedor executa as skills numa sessão local do Claude Code. O workflow do modo A (`.github/workflows/gerar-estudo.yml`) existe, mas ainda não foi testado com um PR real (`docs/fluxo-da-esteira.md`).
+- A proteção da `main` ainda não exige o workflow `Validação` nem a revisão do desenvolvedor. A exigência de homologação aprovada depende do ADR-006.
 - A validação (`scripts/validacao.mjs`) e as skills descrevem as mesmas regras. Ao mudar uma regra, mude as duas no mesmo PR, junto com o schema e o template, se for o caso.

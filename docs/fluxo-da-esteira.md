@@ -76,7 +76,8 @@ flowchart TD
 
 ### Regras do modo A
 
-- **Gatilho.** O workflow roda quando um commit do PR altera `content/reports/<slug>/`. Commits do próprio agente só alteram `app/reports/<slug>/`, então não disparam uma nova geração.
+- **Workflows.** `.github/workflows/gerar-estudo.yml` roda o agente com as skills. `.github/workflows/validacao.yml` roda lint, typecheck, `npm run validar` e build em todo PR para a `main`.
+- **Gatilho.** A geração roda quando o último push do PR altera `content/reports/<slug>/`, só para os estudos alterados. Commits do próprio agente só alteram `app/reports/<slug>/`, então não disparam uma nova geração.
 - **Versões.** Cada geração é um commit no mesmo PR, com um preview novo. As versões anteriores ficam no histórico do PR (PRD, RF-14).
 - **Ajustes.** O agente nunca altera as entradas. Ajuste de apresentação é feito por uma pessoa no `guideline.md`; ajuste de análise ou de dados volta para o cientista (ADR-005; PRD, Q23).
 - **Publicação.** O merge na `main` é sempre humano. A `main` precisa de proteção para que nada entre sem PR, validação e aprovação (PRD, RF-13 e Q18).
