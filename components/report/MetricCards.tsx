@@ -16,11 +16,11 @@ export default function MetricCards({ items }: { items: Metric[] }) {
           className="min-h-[154px] border-t-4 bg-white p-[22px]"
           style={{ borderTopColor: m.accent }}
         >
-          <div className="text-[11px] font-medium tracking-[0.08em] text-[#7A7A7A] uppercase">{m.label}</div>
-          <div className="mt-3 mb-1.5 text-[28px] leading-none font-semibold tracking-[-0.04em] text-[#001E1D]">
+          <div className="text-[11px] font-medium tracking-[0.08em] text-graf-text uppercase">{m.label}</div>
+          <div className="mt-3 mb-1.5 text-[28px] leading-none font-semibold tracking-[-0.04em] text-graf-deep">
             {m.value}
           </div>
-          <div className="text-[13px] text-[#54595F]">{m.detail}</div>
+          <div className="text-[13px] text-graf-secondary">{m.detail}</div>
         </div>
       ))}
     </div>

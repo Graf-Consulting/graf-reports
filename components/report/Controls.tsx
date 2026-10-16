@@ -11,8 +11,8 @@ export function ToggleButton({ active, onClick, children }: ToggleProps) {
   return (
     <button
       onClick={onClick}
-      className={`border px-3 py-2 text-[13px] text-[#001E1D] ${
-        active ? 'border-[#001E1D] font-bold' : 'border-[#cfd8d9] bg-white font-medium hover:border-[#001E1D]'
+      className={`border px-3 py-2 text-[13px] text-graf-deep ${
+        active ? 'border-graf-deep font-bold' : 'border-graf-border bg-white font-medium hover:border-graf-deep'
       }`}
     >
       {children}
@@ -32,7 +32,7 @@ export function SelectControl<T extends string>({ value, onChange, options }: Se
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T)}
-      className="border border-[#cfd8d9] bg-white px-3 py-2 text-[13px] font-medium text-[#001E1D]"
+      className="border border-graf-border bg-white px-3 py-2 text-[13px] font-medium text-graf-deep"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>

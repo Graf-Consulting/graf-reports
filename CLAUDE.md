@@ -41,7 +41,7 @@ components/
   charts/                    gráficos do kit sobre PlotlyChart (RankingChart,
                              StackedAreaChart, SankeyChart)
 lib/report/
-  tokens.ts                  paleta GRAF (COLORS, ACCENT_SEQUENCE, AREA_PALETTE)
+  tokens.ts                  paleta GRAF (COLORS, ACCENT_SEQUENCE, AREA_PALETTE, paletas do Sankey, CSS_VARS)
   renderizador/              Renderizador (composição + entradas → página), blocos interativos,
                              preenchimento de marcadores e leitura dos cabeçalhos YAML no build
   format.ts                  formatadores (compact, fob) e limpeza de rótulos (cleanLabel)
@@ -62,7 +62,7 @@ Hoje existe um único estudo, `impacto-restricoes-ue`, já no formato da esteira
 ## Convenções de código
 
 - Componentes do kit são parametrizados por linhas de dados e nomes de coluna (`rows`, `labelKey`, `valueKey`...). Não conhecem nenhum estudo.
-- Cores vêm de `lib/report/tokens.ts`. Não escreva hex solto em componente ou estudo.
+- Cores vêm de `lib/report/tokens.ts`. Não escreva hex solto em componente ou estudo: em classes Tailwind use `bg-graf-*`, `text-graf-*` e afins; em JavaScript, importe de `tokens.ts`. Cor nova entra em `COLORS` e no bloco `@theme` do `app/globals.css` (`docs/guidelines/`).
 - Números exibidos usam os formatadores de `lib/report/format.ts`, em pt-BR.
 - Componentes com estado ou gráfico levam `'use client'`. As páginas (`page.tsx`) continuam como server components finos.
 - Cada pasta do kit exporta seus componentes por um `index.ts`. Ao criar um componente, registre-o no barrel.

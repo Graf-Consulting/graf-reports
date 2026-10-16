@@ -17,7 +17,7 @@ Depois de `01-validar-entradas` aprovar o conjunto na mesma execução. Também 
 
 - `content/reports/<slug>/data.json`, `metodologia.md` e `guideline.md`, já validados.
 - Catálogo do kit e schema da composição: `lib/report/schemas/composicao.schema.json`. Cada tipo de bloco em `definitions` é um item do catálogo, com a descrição do caso de uso e dos componentes que usa.
-- Guidelines da plataforma em `docs/guidelines/`.
+- Guidelines da plataforma em `docs/guidelines/`, em especial [uso dos blocos](../../../docs/guidelines/uso-dos-blocos.md): quando usar cada bloco, limites de itens e ordem do report.
 - Estudo de referência, como exemplo de composição: `app/reports/impacto-restricoes-ue/composicao.json` (PRD, RF-17).
 
 ## Pré-requisitos
@@ -38,8 +38,8 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
    - a análise da metodologia que o bloco atende (RF-08);
    - o vínculo com os dados: tabela e campos, todos existentes no `data.json` e usados pela análise;
    - interação: opções de dimensão, métrica e filtro, com a inicial em primeiro;
-   - top N e formato de exibição de cada campo (`texto` ou um formatador de `lib/report/format.ts`);
-   - para `indicadores`, os mesmos campos e a mesma ordem de `indicadores` no guideline;
+   - top N e formato de exibição de cada campo, conforme as regras de escrita abaixo;
+   - para `indicadores`, os mesmos campos e a mesma ordem de `indicadores` no guideline, com a unidade conforme as regras abaixo;
    - os ids das leituras, conclusões e ressalvas que o bloco exibe.
    Tudo o que a seção do guideline cita precisa aparecer em algum bloco da seção.
 4. **Ressalvas.** Toda ressalva da metodologia entra no report (ADR-002):
@@ -51,6 +51,18 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
    - o guideline pedir algo que nenhum componente do kit cobre.
 6. **Validação.** Rode `npm run validar -- <slug>` e corrija a composição até ela passar. O script valida o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
 7. **Proteção de ajustes manuais.** Se `app/reports/<slug>/composicao.json` já existir, compare com a nova versão. Liste o que mudou e sinalize qualquer diferença que não venha de mudança nas entradas. Uma diferença assim pode ser ajuste manual do desenvolvedor e não pode ser descartada sem aviso (RF-16).
+
+## Regras de escrita da composição
+
+Para a mesma entrada gerar sempre o mesmo arquivo (RNF-04; backlog V8). O `npm run validar` confere todas.
+
+| Regra | Como escrever |
+|---|---|
+| Formato de exibição | Omita `formato` quando o valor é exibido como está. Declare só `compact`, `fob` ou `cleanLabel`. |
+| Top N | Sempre declare `top` em `ranking`, `serie_empilhada` e `fluxo`, mesmo quando igual ao padrão do kit (10, 10 e 100). |
+| Unidade nos cartões de `indicadores` | Declare `"mostrar_unidade": true` quando o formato for `compact` e o campo tiver `unidade` no `data.json` (ex.: `271,3 mi kg`). Nos demais casos, não declare: `fob` já mostra `US$`, e valores de texto não têm unidade. |
+| Chave `$schema` | Não use. |
+| Formatação do arquivo | Indentação de 2 espaços, um item por linha e quebra de linha no fim: a saída de `JSON.stringify(composicao, null, 2)`. |
 
 ## Saída
 

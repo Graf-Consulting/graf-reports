@@ -2,12 +2,11 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "composicao.schema.json",
   "title": "Composição do report (app/reports/<slug>/composicao.json)",
-  "description": "Estrutura do report e catálogo de blocos do kit (ADR-004; PRD, Q10). A composição não traz textos nem estilo: os textos de interface vêm do guideline.md, os de análise da metodologia.md, e cores e estilos de lib/report/tokens.ts. Cada tipo de bloco em definitions é um item do catálogo. Blocos existentes não mudam de comportamento; props novas são opcionais.",
+  "description": "Estrutura do report e catálogo de blocos do kit (ADR-004; PRD, Q10). A composição não traz textos nem estilo: os textos de interface vêm do guideline.md, os de análise da metodologia.md, e cores e estilos de lib/report/tokens.ts. Cada tipo de bloco em definitions é um item do catálogo. Blocos existentes não mudam de comportamento; props novas são opcionais. Regras de escrita, para a mesma entrada gerar sempre o mesmo arquivo (RNF-04): sem a chave $schema; formato omitido quando o valor é exibido como está; top sempre declarado em ranking, série e fluxo; arquivo formatado como JSON.stringify(composicao, null, 2), com quebra de linha no fim.",
   "type": "object",
   "required": ["slug", "secoes"],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
     "slug": {
       "description": "Igual ao slug do guideline.md e ao nome das pastas do estudo.",
       "$ref": "#/definitions/idKebab"
@@ -30,8 +29,8 @@
       "pattern": "^[a-z][a-z0-9_]*$"
     },
     "formato": {
-      "description": "texto (valor como está) ou um formatador de lib/report/format.ts.",
-      "enum": ["texto", "compact", "fob", "cleanLabel"]
+      "description": "Formatador de lib/report/format.ts. Omita o campo para exibir o valor como está.",
+      "enum": ["compact", "fob", "cleanLabel"]
     },
     "campoFormatado": {
       "description": "Um campo do data.json, com formato opcional de exibição.",
@@ -44,7 +43,7 @@
       }
     },
     "top": {
-      "description": "Quantos itens mostrar, pelos maiores valores.",
+      "description": "Quantos itens mostrar, pelos maiores valores. Sempre declarado, mesmo quando igual ao padrão do kit (ranking 10, série 10, fluxo 100).",
       "type": "integer",
       "minimum": 1
     },
@@ -127,8 +126,8 @@
               "campo": { "$ref": "#/definitions/nomeTecnico" },
               "formato": { "$ref": "#/definitions/formato" },
               "mostrar_unidade": {
-                "description": "Opcional. true acrescenta a unidade do campo depois do valor (ex.: 271,3 mi kg).",
-                "type": "boolean"
+                "description": "true acrescenta a unidade do campo depois do valor (ex.: 271,3 mi kg). Regra: true quando o formato é compact e o campo tem unidade no data.json; ausente nos demais casos (fob já mostra US$; texto não tem unidade).",
+                "const": true
               }
             }
           }
@@ -139,7 +138,7 @@
     "ranking": {
       "description": "Catálogo · ChartCard + RankingChart. Barras horizontais com os maiores valores. Título e descrição vêm da análise na seção do guideline.",
       "type": "object",
-      "required": ["tipo", "analise", "tabela", "rotulo", "valor"],
+      "required": ["tipo", "analise", "tabela", "rotulo", "valor", "top"],
       "additionalProperties": false,
       "properties": {
         "tipo": { "const": "ranking" },
@@ -164,7 +163,7 @@
     "serie_empilhada": {
       "description": "Catálogo · ChartCard + StackedAreaChart + controles. Área empilhada por período; o leitor alterna a dimensão e a métrica. Os nomes das opções vêm de rotulos.",
       "type": "object",
-      "required": ["tipo", "analise", "periodo", "dimensoes", "metricas"],
+      "required": ["tipo", "analise", "periodo", "dimensoes", "metricas", "top"],
       "additionalProperties": false,
       "properties": {
         "tipo": { "const": "serie_empilhada" },
@@ -202,7 +201,7 @@
     "fluxo": {
       "description": "Catálogo · ChartCard + SankeyChart + controles. Fluxo em camadas; o leitor alterna a métrica e, opcionalmente, filtra por um campo.",
       "type": "object",
-      "required": ["tipo", "analise", "tabela", "camadas", "metricas"],
+      "required": ["tipo", "analise", "tabela", "camadas", "metricas", "top"],
       "additionalProperties": false,
       "properties": {
         "tipo": { "const": "fluxo" },

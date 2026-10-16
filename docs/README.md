@@ -12,6 +12,10 @@
 - [Fluxo da esteira](fluxo-da-esteira.md): como um estudo sai das entradas e chega à produção, no modo piloto (sessão local) e na meta (workflow no PR).
 - [Backlog de validações técnicas](backlog-validacoes-tecnicas.md): testes técnicos da esteira e os resultados.
 
+## Guidelines da plataforma
+
+- [Guidelines da plataforma](guidelines/README.md): cores, tipografia, layout, números e gráficos que todo report segue. Versão inicial, que descreve o que já está no código.
+
 ## Decisões de arquitetura
 
 - [Índice dos ADRs](adr/README.md)

@@ -4,16 +4,11 @@
 import { useMemo } from 'react';
 import PlotlyChart from './PlotlyChart';
 import { BASE_LAYOUT } from './plotly';
-
-/** Cores dos nós de cada camada, da esquerda para a direita. */
-const NODE_PALETTES = [
-  ['#d9edf6', '#c9e7d0', '#f8dfc5', '#e2d6eb', '#d8e5e4', '#f1d7d3'],
-  ['#001E1D', '#17606A', '#3A7B80', '#456A7A', '#54595F', '#346B77'],
-  ['#F5A855', '#dc8c4f', '#d66d52', '#e4a441', '#c75f50', '#d98355'],
-];
-
-/** Cor das ligações que saem de cada camada. */
-const LINK_COLORS = ['rgba(110,193,228,.38)', 'rgba(245,168,85,.38)'];
+import {
+  SANKEY_LINK_COLORS as LINK_COLORS,
+  SANKEY_NODE_LINE,
+  SANKEY_NODE_PALETTES as NODE_PALETTES,
+} from '@/lib/report/tokens';
 
 type Props = {
   rows: any[];
@@ -61,7 +56,7 @@ export default function SankeyChart({ rows, layers, valueKey, topN = 100, classN
       {
         type: 'sankey',
         orientation: 'h',
-        node: { pad: 13, thickness: 16, line: { color: 'rgba(0,30,29,.24)', width: 0.5 }, label: nodes, color: nodeColors },
+        node: { pad: 13, thickness: 16, line: { color: SANKEY_NODE_LINE, width: 0.5 }, label: nodes, color: nodeColors },
         link: {
           source: links.source,
           target: links.target,
