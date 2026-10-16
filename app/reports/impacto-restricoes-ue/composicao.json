@@ -1,5 +1,4 @@
 {
-  "$schema": "../../../lib/report/schemas/composicao.schema.json",
   "slug": "impacto-restricoes-ue",
   "secoes": [
     {
@@ -9,7 +8,10 @@
           "tipo": "mensagem_chave",
           "analise": "exposicao-2026",
           "tabela": "summary",
-          "valor": { "campo": "fob_2026", "formato": "fob" },
+          "valor": {
+            "campo": "fob_2026",
+            "formato": "fob"
+          },
           "leitura": "mensagem-chave"
         }
       ]
@@ -22,10 +24,21 @@
           "analise": "exposicao-2026",
           "tabela": "summary",
           "itens": [
-            { "campo": "fob_2026", "formato": "fob" },
-            { "campo": "kg_2026", "formato": "compact", "mostrar_unidade": true },
-            { "campo": "top_country", "formato": "texto" },
-            { "campo": "top_state", "formato": "texto" }
+            {
+              "campo": "fob_2026",
+              "formato": "fob"
+            },
+            {
+              "campo": "kg_2026",
+              "formato": "compact",
+              "mostrar_unidade": true
+            },
+            {
+              "campo": "top_country"
+            },
+            {
+              "campo": "top_state"
+            }
           ]
         }
       ]
@@ -41,7 +54,9 @@
               "tipo": "ranking",
               "analise": "ranking-destinos",
               "tabela": "countries26",
-              "rotulo": { "campo": "pais_destino" },
+              "rotulo": {
+                "campo": "pais_destino"
+              },
               "valor": "vl_fob",
               "extra": "kg_liquido",
               "top": 10
@@ -50,14 +65,19 @@
               "tipo": "ranking",
               "analise": "ranking-origens",
               "tabela": "states26",
-              "rotulo": { "campo": "uf_origem_carga" },
+              "rotulo": {
+                "campo": "uf_origem_carga"
+              },
               "valor": "vl_fob",
               "extra": "kg_liquido",
               "top": 10
             }
           ]
         },
-        { "tipo": "destaque", "conclusao": "prioridade-mercado-origem" }
+        {
+          "tipo": "destaque",
+          "conclusao": "prioridade-mercado-origem"
+        }
       ]
     },
     {
@@ -68,11 +88,24 @@
           "analise": "evolucao-mensal",
           "periodo": "periodo",
           "dimensoes": [
-            { "tabela": "monthly_product", "campo": "nome_simplificado_antaq" },
-            { "tabela": "monthly_state", "campo": "uf_origem_carga" },
-            { "tabela": "monthly_rfb", "campo": "unidade_rfb", "formato": "cleanLabel" }
+            {
+              "tabela": "monthly_product",
+              "campo": "nome_simplificado_antaq"
+            },
+            {
+              "tabela": "monthly_state",
+              "campo": "uf_origem_carga"
+            },
+            {
+              "tabela": "monthly_rfb",
+              "campo": "unidade_rfb",
+              "formato": "cleanLabel"
+            }
           ],
-          "metricas": ["vl_fob", "kg_liquido"],
+          "metricas": [
+            "vl_fob",
+            "kg_liquido"
+          ],
           "top": 10
         }
       ]
@@ -85,12 +118,28 @@
           "analise": "fluxo-logistico",
           "tabela": "sankey",
           "camadas": [
-            { "campo": "uf_origem_carga" },
-            { "campo": "unidade_rfb", "formato": "cleanLabel" },
-            { "campo": "pais_destino" }
+            {
+              "campo": "uf_origem_carga"
+            },
+            {
+              "campo": "unidade_rfb",
+              "formato": "cleanLabel"
+            },
+            {
+              "campo": "pais_destino"
+            }
           ],
-          "metricas": ["kg_liquido", "vl_fob"],
-          "filtro": { "campo": "ano", "opcoes": ["todos", 2026] },
+          "metricas": [
+            "kg_liquido",
+            "vl_fob"
+          ],
+          "filtro": {
+            "campo": "ano",
+            "opcoes": [
+              "todos",
+              2026
+            ]
+          },
           "top": 100
         }
       ]
@@ -101,7 +150,11 @@
         {
           "tipo": "nota",
           "leitura": "como-interpretar",
-          "ressalvas": ["excecoes-sanitarias", "redirecionamento", "aproximacao-ncm"]
+          "ressalvas": [
+            "excecoes-sanitarias",
+            "redirecionamento",
+            "aproximacao-ncm"
+          ]
         }
       ]
     }

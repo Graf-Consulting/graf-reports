@@ -237,6 +237,9 @@ export function validarComposicao(texto, { D, G, M }) {
   }
   erros.push(...errosDoSchema(schemas.composicao, 'composicao.json', C));
   if (erros.length) return erros;
+  // Formatação fixa, para a mesma composição gerar sempre o mesmo arquivo (RNF-04).
+  if (texto.replace(/\r\n/g, '\n') !== JSON.stringify(C, null, 2) + '\n')
+    e('arquivo', 'fora da formatação padrão: indentação de 2 espaços, um item por linha e quebra de linha no fim (saída de JSON.stringify(composicao, null, 2))');
 
   const T = D.tabelas;
   const analises = Object.fromEntries(M.analises.map((a) => [a.id, a]));
@@ -277,7 +280,15 @@ export function validarComposicao(texto, { D, G, M }) {
         citada('leituras', b.leitura, 'leitura');
         break;
       case 'indicadores': {
-        b.itens.forEach((it) => { campo(local, b.tabela, it.campo, b.analise, it.formato); rotulo(local, it.campo, 'indicador'); });
+        b.itens.forEach((it) => {
+          campo(local, b.tabela, it.campo, b.analise, it.formato);
+          rotulo(local, it.campo, 'indicador');
+          // Unidade no cartão: só com formato compact e campo com unidade (fob já mostra US$).
+          const unidade = T[b.tabela]?.campos[it.campo]?.unidade;
+          const deve = it.formato === 'compact' && Boolean(unidade);
+          if (deve && !it.mostrar_unidade) e(local, `indicador "${it.campo}" usa compact e tem unidade "${unidade}": declare "mostrar_unidade": true`);
+          if (!deve && it.mostrar_unidade) e(local, `indicador "${it.campo}" não deve ter "mostrar_unidade": só vale para formato compact com unidade`);
+        });
         const ind = (sg.analises ?? []).find((a) => a.id === b.analise)?.indicadores ?? [];
         const esperado = ind.map((i) => i.campo).join(', '), atual = b.itens.map((i) => i.campo).join(', ');
         if (esperado !== atual) e(local, `itens (${atual}) diferentes dos indicadores do guideline (${esperado})`);
