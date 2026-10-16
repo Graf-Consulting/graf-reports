@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "data_referencia": "2026-10-16",
+    "periodo": { "inicio": "2026-01", "fim": "2026-06" },
+    "fontes": [
+      { "nome": "Dados fictícios", "referencia": "Criados só para testar a esteira de publicação; não publicar" }
+    ]
+  },
+  "tabelas": {
+    "resumo": {
+      "descricao": "Indicadores consolidados do primeiro semestre de 2026 (uma linha)",
+      "campos": {
+        "vendas_total": { "tipo": "numero", "unidade": "US$", "descricao": "Valor total vendido no semestre" },
+        "volume_total": { "tipo": "numero", "unidade": "t", "descricao": "Volume total vendido no semestre" },
+        "maior_regiao": { "tipo": "texto", "descricao": "Região com maior valor vendido" },
+        "vendas_maior_regiao": { "tipo": "numero", "unidade": "US$", "descricao": "Valor vendido pela maior região" }
+      },
+      "linhas": [
+        { "vendas_total": 48500000, "volume_total": 12300, "maior_regiao": "Sudeste", "vendas_maior_regiao": 21400000 }
+      ]
+    },
+    "vendas_regiao": {
+      "descricao": "Vendas do primeiro semestre de 2026 por região",
+      "chave": ["regiao"],
+      "campos": {
+        "regiao": { "tipo": "texto", "descricao": "Região do Brasil" },
+        "vendas": { "tipo": "numero", "unidade": "US$", "descricao": "Valor vendido" },
+        "volume": { "tipo": "numero", "unidade": "t", "descricao": "Volume vendido" }
+      },
+      "linhas": [
+        { "regiao": "Sudeste", "vendas": 21400000, "volume": 5200 },
+        { "regiao": "Sul", "vendas": 12800000, "volume": 3400 },
+        { "regiao": "Nordeste", "vendas": 7600000, "volume": 2100 },
+        { "regiao": "Centro-Oeste", "vendas": 4900000, "volume": 1100 },
+        { "regiao": "Norte", "vendas": 1800000, "volume": 500 }
+      ]
+    }
+  }
+}
