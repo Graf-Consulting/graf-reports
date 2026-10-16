@@ -1,8 +1,8 @@
 export default function Header() {
   return (
     <>
-      <div className="h-2 bg-[#61CE70]" />
-      <header className="border-b border-[#e3e8e8] bg-white">
+      <div className="h-2 bg-graf-accent" />
+      <header className="border-b border-graf-grid bg-white">
         <div className="mx-auto flex min-h-[78px] w-[min(1180px,calc(100%-48px))] items-center justify-between gap-6 md:min-h-[92px]">
           <a
             href="https://grafconsulting.com.br/"
@@ -22,11 +22,11 @@ export default function Header() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Acessar a página da GRAF Infra Consulting no LinkedIn"
-            className="inline-flex items-center gap-2.5 border border-[#6EC1E4] px-3.5 py-2.5 text-xs font-medium tracking-wide text-[#001E1D] transition-colors hover:bg-[#6EC1E4] hover:text-white"
+            className="inline-flex items-center gap-2.5 border border-graf-primary px-3.5 py-2.5 text-xs font-medium tracking-wide text-graf-deep transition-colors hover:bg-graf-primary hover:text-white"
           >
             <span
               aria-hidden="true"
-              className="grid h-[19px] w-[19px] place-items-center rounded-[2px] bg-[#0A66C2] text-[13px] font-bold leading-none text-white"
+              className="grid h-[19px] w-[19px] place-items-center rounded-[2px] bg-graf-linkedin text-[13px] font-bold leading-none text-white"
             >
               in
             </span>

@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+/*
+ * Cores do kit como utilitários do Tailwind (bg-graf-deep, text-graf-secondary...).
+ * Os valores vêm de lib/report/tokens.ts, publicados como variáveis --graf-* em app/layout.tsx.
+ * Ao criar um token novo em COLORS, registre-o aqui também.
+ */
+@theme inline {
+  --color-graf-primary: var(--graf-primary);
+  --color-graf-secondary: var(--graf-secondary);
+  --color-graf-text: var(--graf-text);
+  --color-graf-accent: var(--graf-accent);
+  --color-graf-white: var(--graf-white);
+  --color-graf-orange: var(--graf-orange);
+  --color-graf-deep: var(--graf-deep);
+  --color-graf-dark: var(--graf-dark);
+  --color-graf-grid: var(--graf-grid);
+  --color-graf-border: var(--graf-border);
+  --color-graf-surface: var(--graf-surface);
+  --color-graf-accent-surface: var(--graf-accent-surface);
+  --color-graf-on-dark: var(--graf-on-dark);
+  --color-graf-on-dark-muted: var(--graf-on-dark-muted);
+  --color-graf-footer-text: var(--graf-footer-text);
+  --color-graf-linkedin: var(--graf-linkedin);
+}
+
 html {
   scroll-behavior: smooth;
 }
