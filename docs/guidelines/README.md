@@ -79,7 +79,7 @@ O renderizador escolhe as cores pela ordem do bloco; quem monta o estudo não es
 - Conteúdo com largura máxima de 1180 px e margem lateral de 24 px em telas pequenas.
 - Seções separadas por 60 px.
 - Blocos lado a lado (bloco `grupo`) empilham em telas pequenas.
-- Cabeçalho e rodapé são os mesmos para todos os estudos (`components/layout/`).
+- O cabeçalho é o mesmo para todos os estudos. O rodapé também, exceto a linha "Fonte: … · Elaboração analítica: …", que o renderizador preenche com o `metadata` de cada estudo: os nomes em `fontes` e a `data_referencia` (`components/layout/`).
 
 ## Números e textos
 
@@ -108,5 +108,4 @@ Quando nenhum bloco do kit atende, o estudo pode ter um componente próprio (ski
 ## Pendências conhecidas
 
 - **Contraste e texto alternativo:** cinco combinações de cor do kit ficam abaixo do mínimo da WCAG, e os gráficos não têm texto alternativo. Detalhes e propostas em [acessibilidade](acessibilidade.md).
-- **Rodapé com texto de um estudo:** o rodapé compartilhado (`components/layout/Footer.tsx`) traz "Fonte: Comex Stat · Elaboração analítica: 10 set. 2026", que é do `impacto-restricoes-ue`. Todo estudo novo herdaria esse texto, o que fere o isolamento do ADR-001. A fonte e a data deveriam vir do `metadata` de cada estudo.
 - **Validação com o design:** as regras de [uso dos blocos](uso-dos-blocos.md) e de [acessibilidade](acessibilidade.md) são propostas e precisam ser validadas por quem responde pela identidade visual (PRD, Q9).

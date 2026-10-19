@@ -87,7 +87,7 @@ Em nenhuma das opções o Power Automate ou um workflow faz o merge direto, cont
 
 - **Licença do Power Automate:** quais gatilhos (requisição HTTP) e conectores (GitHub, aprovações no Teams) estão disponíveis no plano de vocês.
 - **App Workflows no Teams:** se o modelo de webhook para chat em grupo está liberado no tenant.
-- **Acesso ao preview (Q15; backlog V6):** hoje o link da Vercel é aberto a quem tiver o link. Com a proteção de preview da Vercel ativada, os stakeholders podem precisar de conta na Vercel.
+- **Acesso ao preview (Q15; backlog V6):** verificado em 16/10/2026: os previews são protegidos pelo login da Vercel, e só membros do time na Vercel os abrem. Uma conta na Vercel será criada para os stakeholders.
 - **Proteção da `main`:** regras de branch e status obrigatórios no plano atual do GitHub.
 
 ## Revisitar quando
