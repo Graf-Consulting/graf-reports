@@ -82,6 +82,9 @@ flowchart TD
 - **Ajustes.** O agente nunca altera as entradas. Ajuste de apresentação é feito por uma pessoa no `guideline.md`; ajuste de análise ou de dados volta para o cientista (ADR-005; PRD, Q23).
 - **Publicação.** O merge na `main` é sempre humano. A `main` precisa de proteção para que nada entre sem PR, validação e aprovação (PRD, RF-13 e Q18).
 - **Credenciais.** O token do modelo fica em segredo do repositório (RNF-09). O workflow precisa de permissão de escrita no conteúdo e nos PRs.
+- **Revisão do código gerado.** O agente faz commit como o bot `claude`, e esse commit dispara o `Validação` e a revisão do Claude, que aceita o bot (`allowed_bots`).
+- **Homologação.** O preview do PR exige login na Vercel; os stakeholders acessam com a conta criada para eles (ADR-006).
+- **Testado** em 16/10/2026 com um PR real e um estudo fictício: geração de ponta a ponta em cerca de 2 minutos (backlog, V11).
 
 ## Modo C: sessão local (piloto)
 

@@ -109,6 +109,6 @@ Os templates dos três arquivos estão em `docs/template/` e os schemas que os v
 ## Pendências conhecidas
 
 - As questões abertas estão no PRD (Q9 e Q14 a Q23). Entre elas estão as guidelines de design, o acesso ao preview e o registro de aprovação. Não decida nenhuma delas no código sem registrar a decisão no PRD (seção 11) ou em ADR.
-- A esteira roda hoje no modo piloto: o desenvolvedor executa as skills numa sessão local do Claude Code. O workflow do modo A (`.github/workflows/gerar-estudo.yml`) existe, mas ainda não foi testado com um PR real (`docs/fluxo-da-esteira.md`).
+- A esteira roda hoje no modo piloto: o desenvolvedor executa as skills numa sessão local do Claude Code. O workflow do modo A (`.github/workflows/gerar-estudo.yml`) foi testado com um PR real e funciona de ponta a ponta (`docs/backlog-validacoes-tecnicas.md`, V11); ele passa a ser o caminho padrão quando as entradas chegarem por PR.
 - A proteção da `main` ainda não exige o workflow `Validação` nem a revisão do desenvolvedor. A exigência de homologação aprovada depende do ADR-006.
 - A validação (`scripts/validacao.mjs`) e as skills descrevem as mesmas regras. Ao mudar uma regra, mude as duas no mesmo PR, junto com o schema e o template, se for o caso.
