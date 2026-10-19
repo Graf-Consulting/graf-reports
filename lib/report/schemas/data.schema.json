@@ -14,7 +14,7 @@
       "additionalProperties": false,
       "properties": {
         "data_referencia": {
-          "description": "Data da extração dos dados, AAAA-MM-DD.",
+          "description": "Data do snapshot dos dados, AAAA-MM-DD. Aparece no rodapé do report como Elaboração analítica.",
           "type": "string",
           "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
         },

@@ -69,9 +69,9 @@ O arquivo tem dois blocos: `metadata`, com o que vale para o estudo inteiro, e `
 
 | Campo | Obrigatório | O que é |
 |---|---|---|
-| `metadata.data_referencia` | Sim | Data da extração dos dados, `AAAA-MM-DD` |
+| `metadata.data_referencia` | Sim | Data do snapshot dos dados, `AAAA-MM-DD`. Aparece no rodapé do report como "Elaboração analítica" |
 | `metadata.periodo` | Não | Período que os dados cobrem: `inicio` e `fim`, em `AAAA`, `AAAA-MM` ou `AAAA-MM-DD` |
-| `metadata.fontes` | Sim | Uma ou mais fontes, cada uma com `nome` e `referencia` |
+| `metadata.fontes` | Sim | Uma ou mais fontes, cada uma com `nome` e `referencia`. O `nome` aparece no topo ("Base analisada") e no rodapé ("Fonte") |
 | `tabelas.<nome>.descricao` | Sim | O que cada linha representa |
 | `tabelas.<nome>.chave` | Se a tabela tiver mais de uma linha | Campos que identificam uma linha; não podem se repetir |
 | `tabelas.<nome>.campos` | Sim | Cada campo com `tipo`, `descricao` e, se fizer sentido, `unidade` e `nulo` |

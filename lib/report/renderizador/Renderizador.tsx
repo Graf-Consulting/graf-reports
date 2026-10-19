@@ -1,6 +1,8 @@
 import type { ComponentType, ReactNode } from 'react';
 import { RankingChart } from '@/components/charts';
+import { Footer } from '@/components/layout';
 import { Callout, ChartCard, Emphasis, Hero, KeyMessage, MethodNote, MetricCards, ReportSection } from '@/components/report';
+import { dataCurta } from '../format';
 import { ACCENT_SEQUENCE } from '../tokens';
 import BlocoFluxo from './BlocoFluxo';
 import BlocoSerieEmpilhada from './BlocoSerieEmpilhada';
@@ -181,28 +183,33 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
   };
 
   const { metadata } = dados;
+  const fontes = metadata.fontes.map((f) => f.nome).join(', ');
   const meta = [
-    { label: 'Base analisada', value: metadata.fontes.map((f) => f.nome).join(', ') },
+    { label: 'Base analisada', value: fontes },
     ...(metadata.periodo ? [{ label: 'Período', value: `${metadata.periodo.inicio} a ${metadata.periodo.fim}` }] : []),
     ...(guideline.meta ?? []).map((m) => ({ label: m.rotulo, value: leitura(m.leitura) })),
   ];
 
   return (
     <>
-      <Hero eyebrow={guideline.sobretitulo ?? ''} title={guideline.titulo} subtitle={guideline.subtitulo} meta={meta} />
-      {composicao.secoes.map((s) => {
-        const sg = guideline.secoes.find((x) => x.id === s.id);
-        if (!sg) throw new Error(`seção "${s.id}" não existe no guideline`);
-        const blocos = s.blocos.map((b, i) => bloco(b, sg, `${s.id}.${i}`));
-        // A nota usa o cabeçalho da seção; seção sem título não ganha moldura.
-        if (s.blocos.length === 1 && s.blocos[0].tipo === 'nota') return blocos[0];
-        if (!sg.titulo) return <div key={s.id}>{blocos}</div>;
-        return (
-          <ReportSection key={s.id} eyebrow={sg.sobretitulo ?? ''} title={sg.titulo} intro={sg.intro ?? ''}>
-            {blocos}
-          </ReportSection>
-        );
-      })}
+      <main>
+        <Hero eyebrow={guideline.sobretitulo ?? ''} title={guideline.titulo} subtitle={guideline.subtitulo} meta={meta} />
+        {composicao.secoes.map((s) => {
+          const sg = guideline.secoes.find((x) => x.id === s.id);
+          if (!sg) throw new Error(`seção "${s.id}" não existe no guideline`);
+          const blocos = s.blocos.map((b, i) => bloco(b, sg, `${s.id}.${i}`));
+          // A nota usa o cabeçalho da seção; seção sem título não ganha moldura.
+          if (s.blocos.length === 1 && s.blocos[0].tipo === 'nota') return blocos[0];
+          if (!sg.titulo) return <div key={s.id}>{blocos}</div>;
+          return (
+            <ReportSection key={s.id} eyebrow={sg.sobretitulo ?? ''} title={sg.titulo} intro={sg.intro ?? ''}>
+              {blocos}
+            </ReportSection>
+          );
+        })}
+      </main>
+      {/* O rodapé traz a fonte e a data do snapshot deste estudo (metadata do data.json). */}
+      <Footer fonte={fontes} elaboracao={dataCurta(metadata.data_referencia)} />
     </>
   );
 }
