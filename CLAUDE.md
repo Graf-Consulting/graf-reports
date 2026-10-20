@@ -73,7 +73,7 @@ Hoje existe um único estudo, `impacto-restricoes-ue`, já no formato da esteira
 
 - Todo push na `main` publica em produção na Vercel. Nunca faça push direto na `main`. Toda mudança entra por PR.
 - Cada PR ganha um preview da Vercel, que é onde os stakeholders validam o estudo.
-- Os PRs para a `main` passam pelos workflows `Validação` (lint, typecheck, `npm run validar` e build) e Claude Code Review. PRs que mudam `content/reports/` também passam pelo `Gerar estudo`. Quando a Vercel termina um preview, o `Link do preview` comenta no PR o link completo de cada estudo alterado (`.github/workflows/`).
+- Os PRs para a `main` passam pelos workflows `Validação` (lint, typecheck, `npm run validar` e build) e Claude Code Review. PRs que mudam `content/reports/` também passam pelo `Gerar estudo`. Quando a Vercel termina um preview, o `Link do preview` comenta no PR o link completo de cada estudo alterado. O `Validação` também reprova o PR se um commit de bot alterar `content/`. Comentários com `@claude` acionam o agente (`claude.yml`), que em PRs de estudo segue a skill `07-aplicar-ajuste` (`.github/workflows/`).
 - Commits seguem Conventional Commits em português, por exemplo `feat: adiciona estudo <slug>`, `fix:`, `refactor:` e `docs:`.
 - O merge é sempre humano.
 
@@ -103,7 +103,7 @@ Os templates dos três arquivos estão em `docs/template/` e os schemas que os v
 2. Não faça cálculos sobre os dados. Todo número exibido vem do `data.json` como está.
 3. Não redija textos. O texto de análise vem das leituras e conclusões da `metodologia.md`, e os valores dos marcadores vêm do `data.json`, formatados por `lib/report/format.ts`. Os textos de interface vêm do `guideline.md`.
 4. Use só componentes do kit ou componentes próprios declarados no `guideline.md`. Não monte layout arbitrário.
-5. Pedidos de ajuste viram mudança no `guideline.md` e nova geração, nunca edição solta na página.
+5. Pedidos de ajuste viram mudança no `guideline.md` e nova geração, nunca edição solta na página. O `guideline.md` só muda quando um desenvolvedor pede explicitamente: no PR, o agente responde a um `@claude` com sugestões de alteração, e uma pessoa as aceita; o agente nunca faz commit em `content/` (skill `07-aplicar-ajuste`; `docs/fluxo-da-esteira.md`).
 6. Não altere as entradas do cientista. Se uma delas estiver errada, aponte o erro no PR.
 7. Antes do PR, rode lint, typecheck, build e `npm run validar -- <slug>` e confira os números exibidos contra o `data.json`.
 

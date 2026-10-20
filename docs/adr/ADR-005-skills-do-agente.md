@@ -25,11 +25,11 @@ O agente usa sete skills, versionadas no repositório em `.claude/skills/<nn>-<n
 | 04-montar-pagina | Cria a página fina pelo modelo fixo: lê as entradas no build, declara o SEO e chama o renderizador | `composicao.json` e entradas | `app/reports/<slug>/page.tsx` | Na primeira geração do estudo |
 | 05-conferir-report | Roda lint, typecheck e build e confere composição, números, textos, ressalvas e isolamento | Estudo gerado | Relatório de conferência | Antes de abrir o PR e a cada nova versão |
 | 06-abrir-pr | Modo C: cria branch e PR. Modo A: atualiza a descrição do PR que já existe. Em ambos, com resumo e link do preview | Estudo gerado e relatório de conferência | PR e preview | Ao fim da geração |
-| 07-aplicar-ajuste | Classifica o pedido de ajuste. Se for de apresentação e uma pessoa já tiver atualizado o guideline, regenera; senão, aponta os trechos a mudar ou devolve ao cientista | Pedido do stakeholder, guideline atualizado | Nova versão no mesmo PR | A cada pedido de ajuste |
+| 07-aplicar-ajuste | Classifica o pedido de ajuste. Se for de apresentação, sugere a mudança no guideline como "suggested change" no PR, e uma pessoa a aceita; se for de análise ou dados, devolve ao cientista | Pedido feito por um desenvolvedor com `@claude` no PR (ou na sessão local), guideline e composição | Sugestões no PR; depois do aceite, o `Gerar estudo` gera a nova versão no mesmo PR | A cada pedido de ajuste de um desenvolvedor |
 
 Regras que valem para todas as skills:
 
-- **O agente nunca altera as entradas do cientista**, nem o `guideline.md`. Um ajuste de apresentação é feito por uma pessoa no guideline, e o agente regenera a partir dele. Ajuste de análise ou de dados volta ao cientista.
+- **O agente nunca altera as entradas do cientista.** O `guideline.md` só muda quando um desenvolvedor pede explicitamente (decisão de 20/10/2026). No PR, o desenvolvedor pede com `@claude`, o agente responde com sugestões de alteração ("suggested change") e uma pessoa as aceita com "Commit suggestion"; na sessão local, o agente só edita o guideline se o desenvolvedor pedir na sessão. Ajuste de análise ou de dados volta ao cientista. O workflow `Validação` reprova o PR se um commit de bot alterar `content/`.
 - **O agente não escreve textos.** Todo texto exibido vem da metodologia ou do guideline (PRD, Q13).
 - **Componente próprio** pode ser criado sem estar declarado em `componentes_novos`, desde que nenhum bloco do kit atenda. Ele fica isolado na pasta do estudo e não é promovido ao kit pelo agente.
 - **As skills são mantidas pelo desenvolvedor responsável pela plataforma**, que opera o agente e é dono do kit (PRD, seção 3). Mudança numa skill entra por PR, como qualquer código.

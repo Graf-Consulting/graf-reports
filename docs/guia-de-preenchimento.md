@@ -294,4 +294,4 @@ Se você tiver o projeto instalado na sua máquina, rode `npm run validar -- <sl
 - **Hoje (piloto):** envie os três arquivos ao desenvolvedor responsável pela plataforma. Ele coloca os arquivos no repositório, roda a geração e abre o PR com o preview.
 - **Meta:** você mesmo envia os arquivos pelo GitHub, em "Add file → Upload files", dentro de `content/reports/<slug>/`, criando uma branch e um PR. A geração roda no PR e o preview fica pronto ali.
 
-Depois da entrega, confira no preview se o report expressa a análise. Ajustes de apresentação entram no `guideline.md`; ajustes de análise ou de dados, na `metodologia.md` ou no `data.json`. O report é gerado de novo a cada mudança.
+Depois da entrega, confira no preview se o report expressa a análise, pelo link do comentário "Preview para homologação" no PR. Ajustes de apresentação entram no `guideline.md`, pedidos por um desenvolvedor no PR; ajustes de análise ou de dados, na `metodologia.md` ou no `data.json`, feitos por você. O report é gerado de novo a cada mudança. O passo a passo está no [fluxo da esteira](fluxo-da-esteira.md#ajustes-pedidos-na-homologação).
