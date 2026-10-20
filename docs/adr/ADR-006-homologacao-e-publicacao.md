@@ -21,6 +21,8 @@ A ideia inicial era: o preview fica pronto, uma mensagem vai para o grupo do Tea
 
 ## Regras comuns às duas opções
 
+**Já implementado (20/10/2026):** o workflow `link-do-preview.yml` reage ao fim do deploy da Vercel (`deployment_status`) e comenta no PR o link completo de cada estudo alterado, com o commit da versão. É o mesmo gatilho que as duas opções usam para o aviso no Teams, e o link desse comentário é o que deve ir no aviso.
+
 Valem para qualquer opção escolhida:
 
 1. **A aprovação vale para um commit.** O aviso leva o link do preview e o commit correspondente. Um commit novo no PR invalida a aprovação anterior e gera um novo aviso.

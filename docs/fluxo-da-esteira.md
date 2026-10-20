@@ -83,7 +83,7 @@ flowchart TD
 - **Publicação.** O merge na `main` é sempre humano. A `main` precisa de proteção para que nada entre sem PR, validação e aprovação (PRD, RF-13 e Q18).
 - **Credenciais.** O token do modelo fica em segredo do repositório (RNF-09). O workflow precisa de permissão de escrita no conteúdo e nos PRs.
 - **Revisão do código gerado.** O agente faz commit como o bot `claude`, e esse commit dispara o `Validação` e a revisão do Claude, que aceita o bot (`allowed_bots`).
-- **Homologação.** O preview do PR exige login na Vercel; os stakeholders acessam com a conta criada para eles (ADR-006).
+- **Homologação.** O preview do PR exige login na Vercel; os stakeholders acessam com a conta criada para eles (ADR-006). O link a enviar é o do comentário "Preview para homologação", que o workflow `link-do-preview.yml` publica no PR a cada deploy, com o endereço completo de cada estudo alterado (`…vercel.app/reports/<slug>`) e o commit da versão. A raiz do preview abre o estudo mais recente, que nem sempre é o do PR.
 - **Testado** em 16/10/2026 com um PR real e um estudo fictício: geração de ponta a ponta em cerca de 2 minutos (backlog, V11).
 
 ## Modo C: sessão local (piloto)
