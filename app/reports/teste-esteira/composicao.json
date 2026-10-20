@@ -37,7 +37,7 @@
           },
           "valor": "vendas",
           "extra": "volume",
-          "top": 10
+          "top": 3
         },
         {
           "tipo": "destaque",
