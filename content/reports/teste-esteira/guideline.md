@@ -41,7 +41,7 @@ secoes:
     analises:
       - id: ranking-regioes
         titulo: Vendas por região
-        descricao: As cinco regiões, da maior para a menor.
+        descricao: As três maiores regiões, da maior para a menor.
     conclusoes:
       - id: lideranca-regional
         titulo: Destaque
