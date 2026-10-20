@@ -16,8 +16,30 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # As entradas do cientista (content/) só mudam por commit de uma pessoa.
+      # O agente pode sugerir mudanças no guideline, mas nunca fazer commit nelas (ADR-005).
+      - name: Entradas não alteradas por bots
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          ERRO=0
+          for SHA in $(gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '.[] | select(.author.type == "Bot" or (.commit.author.name | endswith("[bot]"))) | .sha'); do
+            ARQUIVOS=$(git diff-tree --no-commit-id --name-only -r "$SHA" -- content/)
+            if [ -n "$ARQUIVOS" ]; then
+              echo "::error::O commit ${SHA:0:7}, feito por um bot, alterou entradas do cientista:"
+              echo "$ARQUIVOS"
+              ERRO=1
+            fi
+          done
+          exit $ERRO
 
       - uses: actions/setup-node@v4
         with:

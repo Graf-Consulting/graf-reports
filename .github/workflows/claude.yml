@@ -43,8 +43,11 @@ jobs:
           # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
           # prompt: 'Update the pull request description to include a summary of changes.'
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+          # Pedidos de ajuste num PR de estudo seguem a skill 07-aplicar-ajuste: o agente
+          # responde com sugestões de alteração ("suggested change") no guideline.md, e uma
+          # pessoa aceita com "Commit suggestion". O agente não faz commit em content/;
+          # o workflow Validação reprova o PR se um commit de bot alterar content/.
+          claude_args: >-
+            --allowedTools
+            "mcp__github_inline_comment__create_inline_comment,Read,Glob,Grep,Bash(npm ci),Bash(npm run validar:*),Bash(gh pr view:*),Bash(gh pr diff:*)"
 

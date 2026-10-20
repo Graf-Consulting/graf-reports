@@ -47,7 +47,7 @@ flowchart TD
     H1["Vercel atualiza o preview do PR"]
     H2["Desenvolvedor revisa composição e código"]:::h
     H3{"Stakeholder aprova<br/>o preview?"}:::h
-    H4["07-aplicar-ajuste classifica o pedido<br/>e aponta o que mudar"]
+    H4["Dev pede no PR: @claude ajuste<br/>07-aplicar-ajuste classifica<br/>e sugere a mudança"]
     H1 --> H2 --> H3
     H3 -- "não: pedido de ajuste" --> H4
   end
@@ -66,7 +66,7 @@ flowchart TD
   G9 -- não --> X2["Comentário no PR com o relatório<br/>e a etapa que falhou"]
   X2 --> D1["Desenvolvedor analisa"]:::h
   G10 --> H1
-  H4 -- "apresentação" --> A1["Pessoa altera o guideline.md no PR"]:::h
+  H4 -- "apresentação" --> A1["Dev aceita a sugestão no guideline.md<br/>(Commit suggestion)"]:::h
   H4 -- "análise ou dados" --> C1
   A1 --> G0
   H3 -- sim --> P1
@@ -79,12 +79,65 @@ flowchart TD
 - **Workflows.** `.github/workflows/gerar-estudo.yml` roda o agente com as skills. `.github/workflows/validacao.yml` roda lint, typecheck, `npm run validar` e build em todo PR para a `main`.
 - **Gatilho.** A geração roda quando o último push do PR altera `content/reports/<slug>/`, só para os estudos alterados. Commits do próprio agente só alteram `app/reports/<slug>/`, então não disparam uma nova geração.
 - **Versões.** Cada geração é um commit no mesmo PR, com um preview novo. As versões anteriores ficam no histórico do PR (PRD, RF-14).
-- **Ajustes.** O agente nunca altera as entradas. Ajuste de apresentação é feito por uma pessoa no `guideline.md`; ajuste de análise ou de dados volta para o cientista (ADR-005; PRD, Q23).
+- **Ajustes.** O agente nunca faz commit nas entradas. Um desenvolvedor pede o ajuste com `@claude` no PR, o agente sugere a mudança no `guideline.md` e o desenvolvedor aceita; ajuste de análise ou de dados volta para o cientista. Passo a passo em [Ajustes pedidos na homologação](#ajustes-pedidos-na-homologação).
 - **Publicação.** O merge na `main` é sempre humano. A `main` precisa de proteção para que nada entre sem PR, validação e aprovação (PRD, RF-13 e Q18).
 - **Credenciais.** O token do modelo fica em segredo do repositório (RNF-09). O workflow precisa de permissão de escrita no conteúdo e nos PRs.
 - **Revisão do código gerado.** O agente faz commit como o bot `claude`, e esse commit dispara o `Validação` e a revisão do Claude, que aceita o bot (`allowed_bots`).
 - **Homologação.** O preview do PR exige login na Vercel; os stakeholders acessam com a conta criada para eles (ADR-006). O link a enviar é o do comentário "Preview para homologação", que o workflow `link-do-preview.yml` publica no PR a cada deploy, com o endereço completo de cada estudo alterado (`…vercel.app/reports/<slug>`) e o commit da versão. A raiz do preview abre o estudo mais recente, que nem sempre é o do PR.
 - **Testado** em 16/10/2026 com um PR real e um estudo fictício: geração de ponta a ponta em cerca de 2 minutos (backlog, V11).
+
+## Ajustes pedidos na homologação
+
+Quando um stakeholder pede uma mudança no preview, o ajuste **nunca é feito na página nem direto na composição**. Ele entra pelas entradas do estudo, e a geração roda de novo sozinha.
+
+**Regra:** o `guideline.md` só muda quando um **desenvolvedor pede explicitamente**. O agente sugere; uma pessoa aceita (ADR-005).
+
+```mermaid
+flowchart TD
+  S1["Stakeholder pede um ajuste<br/>(hoje por qualquer canal; Teams no ADR-006)"]:::h
+  S2["Desenvolvedor registra o pedido no PR:<br/>@claude ajuste: ..."]:::h
+  S3["07-aplicar-ajuste classifica o pedido"]
+  S4{"Tipo do pedido"}
+  S5["Agente comenta sugestões de alteração<br/>no guideline.md (suggested change)"]
+  S6["Desenvolvedor revisa e clica em<br/>Commit suggestion"]:::h
+  S7["Agente responde o que o cientista<br/>precisa mudar"]
+  S8["Cientista altera metodologia.md<br/>ou data.json no PR"]:::h
+  S9["Agente pergunta o que falta para entender"]
+  S10["Commit muda content/ → Gerar estudo regenera<br/>→ novo preview → link atualizado no PR"]
+  S11["Aprovação anterior anulada;<br/>nova homologação"]:::h
+  S1 --> S2 --> S3 --> S4
+  S4 -- "apresentação" --> S5 --> S6 --> S10
+  S4 -- "análise ou dados" --> S7 --> S8 --> S10
+  S4 -- "ambíguo" --> S9 --> S2
+  S10 --> S11
+  classDef h stroke-width:3px
+```
+
+### Passo a passo
+
+1. **O pedido chega.** Hoje, por qualquer canal; quando o ADR-006 for decidido, pelo "Pedir ajuste" do Teams.
+2. **Um desenvolvedor registra o pedido no PR**, num comentário que menciona o agente:
+
+   ```
+   @claude ajuste: o ranking de regiões deve mostrar só as 3 maiores
+   ```
+
+   Só quem tem permissão de escrita no repositório aciona o `@claude`.
+3. **O agente classifica o pedido** (skill `07-aplicar-ajuste`):
+   - **Apresentação** (gráfico, top N, ordem, títulos, rótulos, destaque): responde com **sugestões de alteração** em cima das linhas do `guideline.md`;
+   - **Análise ou dados** (métrica, recorte, número, texto de conclusão): responde o que o cientista precisa mudar na `metodologia.md` ou no `data.json`;
+   - **Ambíguo:** pergunta o que falta.
+4. **Uma pessoa aplica a mudança.**
+   - Apresentação: o desenvolvedor revisa cada sugestão e clica em **Commit suggestion**. Ele também pode editar a sugestão antes, ou recusá-la.
+   - Análise ou dados: o cientista altera o arquivo no próprio PR, pelo site do GitHub ou localmente. Se o ajuste muda a análise de forma relevante, a decisão de seguir no mesmo PR ou voltar ao começo ainda está em aberto (PRD, Q23).
+5. **A geração roda sozinha.** O commit muda `content/reports/<slug>/`, o `Gerar estudo` regenera a composição e o agente faz o commit. Depois do deploy, a Vercel gera um preview novo e o comentário "Preview para homologação" passa a mostrar o link da nova versão.
+6. **Nova homologação.** A proteção da `main` anula a aprovação anterior, e o stakeholder confere a nova versão pelo link atualizado.
+
+### Garantias
+
+- O agente nunca faz commit nas entradas: o workflow `Validação` reprova o PR se um commit de bot alterar `content/`.
+- Toda mudança no guideline tem um autor humano no histórico do PR, e cada versão tem o próprio preview (RF-14).
+- Uma sugestão só pode ser feita em linhas que mudaram no PR. Num PR de estudo novo, o guideline inteiro é novo, então sempre funciona. Num ajuste de um estudo antigo, o agente responde com o trecho a mudar em texto comum, e o desenvolvedor edita.
 
 ## Modo C: sessão local (piloto)
 
