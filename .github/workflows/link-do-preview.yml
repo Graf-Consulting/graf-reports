@@ -1,0 +1,65 @@
+name: Link do preview
+
+# Quando a Vercel termina um deploy de preview, escreve no PR o link completo
+# de cada estudo alterado (…vercel.app/reports/<slug>). O link é do deploy
+# daquele commit, então aponta para a versão exata que está em homologação.
+# Um único comentário por PR, atualizado a cada novo deploy.
+
+on:
+  deployment_status:
+
+jobs:
+  comentar:
+    if: github.event.deployment_status.state == 'success' && contains(github.event.deployment.environment, 'Preview')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+          fetch-depth: 0
+
+      - name: Comentar o link de cada estudo alterado
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.deployment.sha }}
+          URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          PR=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq '[.[] | select(.state == "open")][0].number // empty')
+          if [ -z "$PR" ]; then echo "Deploy sem PR aberto; nada a fazer."; exit 0; fi
+
+          BASE=$(gh pr view "$PR" --repo "$REPO" --json baseRefName --jq .baseRefName)
+          git fetch -q origin "$BASE"
+          SLUGS=$(git diff --name-only "origin/$BASE...$SHA" -- content/reports/ app/reports/ | cut -d/ -f3 | sort -u)
+          if [ -z "$SLUGS" ]; then echo "PR #$PR não altera estudos; nada a fazer."; exit 0; fi
+
+          MARCADOR='<!-- link-do-preview -->'
+          {
+            echo "$MARCADOR"
+            echo "### Preview para homologação"
+            echo
+            echo "Versão: commit \`${SHA:0:7}\`. Abra com a conta da Vercel."
+            echo
+            echo "| Estudo | Link |"
+            echo "|---|---|"
+            for SLUG in $SLUGS; do
+              if [ -f "app/reports/$SLUG/page.tsx" ]; then
+                echo "| \`$SLUG\` | ${URL%/}/reports/$SLUG |"
+              else
+                echo "| \`$SLUG\` | Página ainda não gerada neste commit |"
+              fi
+            done
+            echo
+            echo "Cada commit novo no PR gera outro preview, e este comentário é atualizado com o link da versão mais recente."
+          } > comentario.md
+
+          ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate --jq ".[] | select(.body | startswith(\"$MARCADOR\")) | .id" | head -1)
+          if [ -n "$ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$ID" -F body=@comentario.md > /dev/null
+            echo "Comentário $ID atualizado no PR #$PR."
+          else
+            gh pr comment "$PR" --repo "$REPO" --body-file comentario.md
+          fi

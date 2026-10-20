@@ -32,7 +32,7 @@ Para conferir um estudo localmente, use `npm run dev` e acesse `/reports/<slug>`
 ```
 app/
   layout.tsx, globals.css    compartilhados por todos os estudos
-  page.tsx                   redireciona para o estudo atual
+  page.tsx                   redireciona para o estudo mais recente (maior data_referencia); sem menu
   reports/<slug>/            um estudo por pasta
 components/
   layout/                    Header, Footer
@@ -54,7 +54,8 @@ Hoje existe um único estudo, `impacto-restricoes-ue`, já no formato da esteira
 
 ## Regras de isolamento (ADR-001)
 
-- Um estudo nunca importa nada de outro estudo, e nenhum componente compartilhado lê dados de um estudo.
+- Um estudo nunca importa nada de outro estudo, e nenhum componente compartilhado lê dados de um estudo. Única exceção: a página raiz (`app/page.tsx`) lê o `metadata` dos estudos para redirecionar ao mais recente (ADR-003).
+- O site não tem menu, índice nem navegação entre estudos (ADR-001). Cada estudo é acessado pelo próprio link.
 - Código que serve a um só estudo fica na pasta desse estudo. Um utilitário que pode servir a qualquer estudo, como `cleanLabel`, vai para `lib/report/`.
 - Alterar `components/`, `lib/report/`, `app/layout.tsx` ou `app/globals.css` afeta todos os estudos publicados. Nesse caso, faça o build e confira visualmente cada estudo existente antes e depois da mudança, e diga no PR quais estudos foram conferidos.
 - Não mude o comportamento de blocos nem de componentes existentes do kit. Um componente pode ganhar props novas, sempre opcionais e com padrão igual ao comportamento atual; o que não couber nisso vira um bloco novo (PRD, Q10). Estudos publicados não são regerados, a não ser por pedido explícito.
@@ -72,7 +73,7 @@ Hoje existe um único estudo, `impacto-restricoes-ue`, já no formato da esteira
 
 - Todo push na `main` publica em produção na Vercel. Nunca faça push direto na `main`. Toda mudança entra por PR.
 - Cada PR ganha um preview da Vercel, que é onde os stakeholders validam o estudo.
-- Os PRs para a `main` passam pelos workflows `Validação` (lint, typecheck, `npm run validar` e build) e Claude Code Review. PRs que mudam `content/reports/` também passam pelo `Gerar estudo` (`.github/workflows/`).
+- Os PRs para a `main` passam pelos workflows `Validação` (lint, typecheck, `npm run validar` e build) e Claude Code Review. PRs que mudam `content/reports/` também passam pelo `Gerar estudo`. Quando a Vercel termina um preview, o `Link do preview` comenta no PR o link completo de cada estudo alterado (`.github/workflows/`).
 - Commits seguem Conventional Commits em português, por exemplo `feat: adiciona estudo <slug>`, `fix:`, `refactor:` e `docs:`.
 - O merge é sempre humano.
 

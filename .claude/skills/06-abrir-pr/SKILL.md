@@ -55,7 +55,7 @@ Em português, contendo:
 - os erros encontrados nas entradas do cientista, para correção (CLAUDE.md, regra 6);
 - os pontos que pedem atenção do desenvolvedor, como diferenças sinalizadas sobre ajustes manuais (RF-16).
 
-Inclua o link do preview quando a Vercel o publicar no PR.
+O link completo do estudo no preview (`…vercel.app/reports/<slug>`) é publicado no PR pelo workflow `Link do preview`, num comentário "Preview para homologação", quando a Vercel termina o deploy. Na descrição, aponte para esse comentário; não use o link da raiz do preview, que abre o estudo mais recente e não necessariamente este.
 
 ## Saída
 
