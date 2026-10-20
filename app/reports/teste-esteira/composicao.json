@@ -1,0 +1,60 @@
+{
+  "slug": "teste-esteira",
+  "secoes": [
+    {
+      "id": "visao-geral",
+      "blocos": [
+        {
+          "tipo": "indicadores",
+          "analise": "total-semestre",
+          "tabela": "resumo",
+          "itens": [
+            {
+              "campo": "vendas_total",
+              "formato": "fob"
+            },
+            {
+              "campo": "volume_total",
+              "formato": "compact",
+              "mostrar_unidade": true
+            },
+            {
+              "campo": "maior_regiao"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "regioes",
+      "blocos": [
+        {
+          "tipo": "ranking",
+          "analise": "ranking-regioes",
+          "tabela": "vendas_regiao",
+          "rotulo": {
+            "campo": "regiao"
+          },
+          "valor": "vendas",
+          "extra": "volume",
+          "top": 5
+        },
+        {
+          "tipo": "destaque",
+          "conclusao": "lideranca-regional"
+        }
+      ]
+    },
+    {
+      "id": "como-interpretar",
+      "blocos": [
+        {
+          "tipo": "nota",
+          "ressalvas": [
+            "dados-ficticios"
+          ]
+        }
+      ]
+    }
+  ]
+}
