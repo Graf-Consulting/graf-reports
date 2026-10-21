@@ -174,6 +174,8 @@ O report exibe: *"Em 2026, Países Baixos (Holanda) é o principal mercado no re
 
 Números que não vêm dos dados, como o ano de um recorte ou "os 10 maiores", podem ser escritos direto no texto.
 
+**Negrito.** Um trecho entre `**` sai em negrito no report: `"Os dados vêm do **Plano Nacional de Logística**."`. Pode envolver marcadores: `"**{extensao}** estão acima de 70%."`.
+
 ### 4.4 Corpo
 
 Explique as fontes, como cada análise é feita (fórmulas, unidades, recortes, filtros, campos a usar e a evitar), o contexto das leituras e conclusões e o detalhe das ressalvas. **Cada análise do cabeçalho precisa de uma subseção `###` em `## Análises`, com o mesmo título.**

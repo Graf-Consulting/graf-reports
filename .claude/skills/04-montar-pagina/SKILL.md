@@ -61,7 +61,7 @@ export default function Page() {
 }
 ```
 
-Se o estudo tiver componentes próprios, importe o registro local e passe ao renderizador: `import { proprios } from './components';` e `proprios={proprios}`.
+Se o estudo tiver componentes próprios, importe o registro local e passe ao renderizador: `import { proprios } from './components';` e `proprios={proprios}`. Se o registro também exportar um `Provedor` (estado compartilhado entre componentes, skill `03-gerar-componente`), importe-o junto e passe `provedor={Provedor}`.
 
 ## Saída
 

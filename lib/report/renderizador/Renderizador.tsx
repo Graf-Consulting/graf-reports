@@ -6,8 +6,8 @@ import { dataCurta } from '../format';
 import { ACCENT_SEQUENCE } from '../tokens';
 import BlocoFluxo from './BlocoFluxo';
 import BlocoSerieEmpilhada from './BlocoSerieEmpilhada';
-import { formatar, partes, preencher, tituloEixo, valorHover, valorUnico } from './textos';
-import type { Bloco, Composicao, Dados, Formato, Guideline, Linha, Metodologia, SecaoGuideline, Texto } from './tipos';
+import { formatar, partes, preencher, tituloEixo, valorHover, valorUnico, type Parte } from './textos';
+import type { Bloco, Composicao, Dados, Formato, Guideline, Linha, Metodologia, PropsProprio, SecaoGuideline, Tabela, Texto, TextoPronto } from './tipos';
 
 type Props = {
   composicao: Composicao;
@@ -15,7 +15,9 @@ type Props = {
   guideline: Guideline;
   metodologia: Metodologia;
   /** Registro local dos componentes próprios do estudo, por nome. */
-  proprios?: Record<string, ComponentType<Record<string, unknown>>>;
+  proprios?: Record<string, ComponentType<PropsProprio & Record<string, unknown>>>;
+  /** Opcional. Componente do estudo que envolve a página, para estado compartilhado entre componentes próprios. */
+  provedor?: ComponentType<{ children: ReactNode }>;
 };
 
 /** Rótulo padrão do kit para a opção "todos" de um filtro. */
@@ -26,17 +28,38 @@ const ROTULO_TODOS = 'Todo o período';
  * Textos de interface vêm do guideline, textos de análise da metodologia, valores do data.json.
  * O mesmo conjunto de entradas gera sempre a mesma página.
  */
-export default function Renderizador({ composicao, dados, guideline, metodologia, proprios = {} }: Props) {
+export default function Renderizador({ composicao, dados, guideline, metodologia, proprios = {}, provedor: Provedor }: Props) {
+  /**
+   * Texto da metodologia pronto para exibir: trechos **em negrito** e, se pedido, marcadores destacados.
+   * Sem nenhum negrito, sai como texto simples.
+   */
+  const rico = (item: Texto, destacar?: (p: Parte) => boolean): ReactNode => {
+    const ps = partes(item, dados);
+    const negrito = (p: Parte) => Boolean(p.negrito || destacar?.(p));
+    if (!ps.some(negrito)) return preencher(item, dados);
+    return ps.map((p, i) => (negrito(p) ? <Emphasis key={i}>{p.texto}</Emphasis> : p.texto));
+  };
   const busca = (lista: Texto[] | undefined, id: string, tipo: string) => {
     const item = lista?.find((x) => x.id === id);
     if (!item) throw new Error(`${tipo} "${id}" não existe na metodologia`);
-    return preencher(item, dados);
+    return item;
   };
-  const leitura = (id: string) => busca(metodologia.leituras, id, 'leitura');
-  const ressalva = (id: string) => busca(metodologia.ressalvas, id, 'ressalva');
+  const leitura = (id: string) => rico(busca(metodologia.leituras, id, 'leitura'));
+  const ressalva = (id: string) => rico(busca(metodologia.ressalvas, id, 'ressalva'));
+  const pronto = (lista: Texto[] | undefined, ids: string[] | undefined, tipo: string): Record<string, TextoPronto> =>
+    Object.fromEntries((ids ?? []).map((id) => {
+      const item = busca(lista, id, tipo);
+      return [id, { conteudo: rico(item), texto: preencher(item, dados) }];
+    }));
 
   const rotulo = (campo: string) => guideline.rotulos?.[campo] ?? campo;
   const unidade = (tabela: string, campo: string) => dados.tabelas[tabela]?.campos[campo]?.unidade;
+  /** Valor com a unidade do campo depois, quando o bloco pede mostrar_unidade (ex.: 271,3 mi kg; % vai colado: 88%). */
+  const comUnidade = (tabela: string, item: { campo: string; mostrar_unidade?: boolean }, valor: string) => {
+    const u = item.mostrar_unidade ? unidade(tabela, item.campo) : undefined;
+    if (!u) return valor;
+    return u === '%' ? `${valor}%` : `${valor} ${u}`;
+  };
   const tabela = (nome: string) => {
     const t = dados.tabelas[nome];
     if (!t) throw new Error(`tabela "${nome}" não existe no data.json`);
@@ -67,11 +90,10 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
             key={chave}
             items={b.itens.map((it, i) => {
               const v = formatar(valorUnico(dados, b.tabela, it.campo, chave), it.formato);
-              const u = it.mostrar_unidade ? unidade(b.tabela, it.campo) : undefined;
               const detalhe = indicadores.find((x) => x.campo === it.campo)?.detalhe;
               return {
                 label: rotulo(it.campo),
-                value: u ? `${v} ${u}` : v,
+                value: comUnidade(b.tabela, it, v),
                 detail: detalhe ? leitura(detalhe) : '',
                 accent: ACCENT_SEQUENCE[i % ACCENT_SEQUENCE.length],
               };
@@ -150,12 +172,11 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
 
       case 'destaque': {
         const titulo = sg.conclusoes?.find((c) => c.id === b.conclusao)?.titulo ?? '';
-        const item = metodologia.conclusoes?.find((x) => x.id === b.conclusao);
-        if (!item) throw new Error(`conclusão "${b.conclusao}" não existe na metodologia`);
+        const item = busca(metodologia.conclusoes, b.conclusao, 'conclusão');
         // No destaque, nomes vindos dos dados (formato texto) saem em negrito; números, não.
         return (
           <Callout key={chave} title={titulo && !/[.!?:]$/.test(titulo) ? `${titulo}.` : titulo}>
-            {partes(item, dados).map((p, i) => (p.formato === 'texto' ? <Emphasis key={i}>{p.texto}</Emphasis> : p.texto))}
+            {rico(item, (p) => Boolean(p.marcador) && p.formato === 'texto')}
           </Callout>
         );
       }
@@ -177,7 +198,23 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
       case 'proprio': {
         const Proprio = proprios[b.nome];
         if (!Proprio) throw new Error(`componente próprio "${b.nome}" não está no registro local do estudo`);
-        return <Proprio key={chave} linhas={b.tabela ? tabela(b.tabela).linhas : undefined} {...b.props} />;
+        const tabelas: Record<string, Tabela> = Object.fromEntries((b.tabelas ?? []).map((n) => [n, tabela(n)]));
+        return (
+          <Proprio
+            key={chave}
+            linhas={b.tabela ? tabela(b.tabela).linhas : undefined}
+            tabelas={tabelas}
+            textos={{
+              leituras: pronto(metodologia.leituras, b.leituras, 'leitura'),
+              conclusoes: pronto(metodologia.conclusoes, b.conclusoes, 'conclusão'),
+              ressalvas: pronto(metodologia.ressalvas, b.ressalvas, 'ressalva'),
+            }}
+            rotulos={guideline.rotulos ?? {}}
+            analise={analiseG && { titulo: analiseG.titulo, descricao: analiseG.descricao }}
+            secao={b.cabecalho ? { sobretitulo: sg.sobretitulo, titulo: sg.titulo, intro: sg.intro } : undefined}
+            {...b.props}
+          />
+        );
       }
     }
   };
@@ -186,28 +223,36 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
   const fontes = metadata.fontes.map((f) => f.nome).join(', ');
   const meta = [
     { label: 'Base analisada', value: fontes },
-    ...(metadata.periodo ? [{ label: 'Período', value: `${metadata.periodo.inicio} a ${metadata.periodo.fim}` }] : []),
+    ...(metadata.periodo
+      ? [{ label: 'Período', value: metadata.periodo.inicio === metadata.periodo.fim ? metadata.periodo.inicio : `${metadata.periodo.inicio} a ${metadata.periodo.fim}` }]
+      : []),
     ...(guideline.meta ?? []).map((m) => ({ label: m.rotulo, value: leitura(m.leitura) })),
   ];
 
+  const conteudo = (
+    <>
+      <Hero eyebrow={guideline.sobretitulo ?? ''} title={guideline.titulo} subtitle={guideline.subtitulo} meta={meta} />
+      {composicao.secoes.map((s) => {
+        const sg = guideline.secoes.find((x) => x.id === s.id);
+        if (!sg) throw new Error(`seção "${s.id}" não existe no guideline`);
+        const blocos = s.blocos.map((b, i) => bloco(b, sg, `${s.id}.${i}`));
+        // A nota e o componente próprio com cabecalho desenham o cabeçalho da seção; seção sem título não ganha moldura.
+        const unico = s.blocos.length === 1 ? s.blocos[0] : undefined;
+        if (unico?.tipo === 'nota' || (unico?.tipo === 'proprio' && unico.cabecalho)) return blocos[0];
+        if (!sg.titulo) return <div key={s.id}>{blocos}</div>;
+        return (
+          <ReportSection key={s.id} eyebrow={sg.sobretitulo ?? ''} title={sg.titulo} intro={sg.intro ?? ''}>
+            {blocos}
+          </ReportSection>
+        );
+      })}
+    </>
+  );
+
   return (
     <>
-      <main>
-        <Hero eyebrow={guideline.sobretitulo ?? ''} title={guideline.titulo} subtitle={guideline.subtitulo} meta={meta} />
-        {composicao.secoes.map((s) => {
-          const sg = guideline.secoes.find((x) => x.id === s.id);
-          if (!sg) throw new Error(`seção "${s.id}" não existe no guideline`);
-          const blocos = s.blocos.map((b, i) => bloco(b, sg, `${s.id}.${i}`));
-          // A nota usa o cabeçalho da seção; seção sem título não ganha moldura.
-          if (s.blocos.length === 1 && s.blocos[0].tipo === 'nota') return blocos[0];
-          if (!sg.titulo) return <div key={s.id}>{blocos}</div>;
-          return (
-            <ReportSection key={s.id} eyebrow={sg.sobretitulo ?? ''} title={sg.titulo} intro={sg.intro ?? ''}>
-              {blocos}
-            </ReportSection>
-          );
-        })}
-      </main>
+      {/* O provedor do estudo, se houver, envolve a página para os componentes próprios compartilharem estado. */}
+      <main>{Provedor ? <Provedor>{conteudo}</Provedor> : conteudo}</main>
       {/* O rodapé traz a fonte e a data do snapshot deste estudo (metadata do data.json). */}
       <Footer fonte={fontes} elaboracao={dataCurta(metadata.data_referencia)} />
     </>
