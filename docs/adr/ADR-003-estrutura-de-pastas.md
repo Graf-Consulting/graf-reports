@@ -69,7 +69,7 @@ Destino do que hoje está no estudo atual:
 - O estudo fica em duas pastas; o mesmo slug nas duas mantém a ligação.
 
 **Passa a ser obrigatório**
-- Nenhum arquivo fora de `app/reports/<slug>/` importa `content/reports/<slug>/`. Exceção (20/10/2026): a página raiz (`app/page.tsx`) lê só o `metadata` do `data.json` de cada estudo, no build, para redirecionar ao estudo mais recente (maior `data_referencia`; empate pelo slug). O site continua sem menu ou índice de estudos (ADR-001).
+- Nenhum arquivo fora de `app/reports/<slug>/` importa `content/reports/<slug>/`. Exceção (20/10/2026): a página raiz (`app/page.tsx`) lê só o `metadata` do `data.json` de cada estudo, no build, para redirecionar ao estudo mais recente que já tem página gerada (maior `data_referencia`; empate pelo slug). O site continua sem menu ou índice de estudos (ADR-001).
 - README e seção Diagrama do ADR-001 atualizados com esta estrutura.
 
 ## Revisitar quando
