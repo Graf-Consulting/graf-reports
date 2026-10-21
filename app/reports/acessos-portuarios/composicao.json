@@ -1,0 +1,163 @@
+{
+  "slug": "acessos-portuarios",
+  "secoes": [
+    {
+      "id": "mensagem-chave",
+      "blocos": [
+        {
+          "tipo": "proprio",
+          "nome": "MensagemChaveConclusao",
+          "analise": "ocupacao-elevada",
+          "tabela": "resumo",
+          "tabelas": [
+            "resumo"
+          ],
+          "conclusoes": [
+            "extensao-ocupacao-elevada"
+          ],
+          "props": {
+            "valor": "extensao_70_km"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sobre-a-analise",
+      "blocos": [
+        {
+          "tipo": "proprio",
+          "nome": "TopicosSobreAnalise",
+          "analise": "resumo-base",
+          "leituras": [
+            "contexto",
+            "objetivo",
+            "fonte-e-tratamento",
+            "capacidade"
+          ],
+          "props": {
+            "itens": [
+              {
+                "leitura": "contexto",
+                "abertura": "Contexto"
+              },
+              {
+                "leitura": "objetivo",
+                "abertura": "Objetivo"
+              },
+              {
+                "leitura": "fonte-e-tratamento",
+                "abertura": "Fonte e tratamento"
+              },
+              {
+                "leitura": "capacidade",
+                "abertura": "Capacidade"
+              }
+            ]
+          }
+        },
+        {
+          "tipo": "indicadores",
+          "analise": "resumo-base",
+          "tabela": "resumo",
+          "itens": [
+            {
+              "campo": "instalacoes"
+            },
+            {
+              "campo": "links"
+            },
+            {
+              "campo": "extensao_malha_km",
+              "formato": "compact",
+              "mostrar_unidade": true
+            },
+            {
+              "campo": "cobertura_capacidade_pct",
+              "formato": "compact",
+              "mostrar_unidade": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comparativo",
+      "blocos": [
+        {
+          "tipo": "proprio",
+          "nome": "MapaComparativoOcupacao",
+          "analise": "comparativo-instalacoes",
+          "tabelas": [
+            "instalacoes",
+            "instalacao_faixa"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mapa-interativo",
+      "blocos": [
+        {
+          "tipo": "proprio",
+          "nome": "MapaAcessosPortuarios",
+          "analise": "mapa-acessos",
+          "tabelas": [
+            "instalacoes",
+            "trechos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "indicadores-da-selecao",
+      "blocos": [
+        {
+          "tipo": "proprio",
+          "nome": "IndicadoresInstalacao",
+          "analise": "indicadores-instalacao",
+          "tabelas": [
+            "instalacoes",
+            "instalacao_faixa",
+            "instalacao_distribuicao",
+            "instalacao_rodovia"
+          ],
+          "leituras": [
+            "detalhe-extensao-instalacao",
+            "detalhe-70-instalacao",
+            "detalhe-sem-vmda-instalacao"
+          ],
+          "cabecalho": true
+        }
+      ]
+    },
+    {
+      "id": "cadastro",
+      "blocos": [
+        {
+          "tipo": "proprio",
+          "nome": "CadastroInstalacao",
+          "analise": "cadastro-instalacao",
+          "tabelas": [
+            "instalacoes"
+          ],
+          "cabecalho": true
+        }
+      ]
+    },
+    {
+      "id": "como-interpretar",
+      "blocos": [
+        {
+          "tipo": "nota",
+          "ressalvas": [
+            "ocupacao-so-com-vmda",
+            "ocupacao-bidirecional",
+            "links-compartilhados",
+            "vmda-estimativa",
+            "raio-em-linha-reta"
+          ]
+        }
+      ]
+    }
+  ]
+}
