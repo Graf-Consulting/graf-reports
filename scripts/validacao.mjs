@@ -261,6 +261,13 @@ export function validarComposicao(texto, { D, G, M }) {
     const aceitos = formato && FORMATO_TIPO[formato];
     if (aceitos && !aceitos.includes(def.tipo)) e(local, `formato "${formato}" incompatível com o tipo ${def.tipo} de "${nome}"`);
   };
+  // Unidade junto do valor: só e sempre com formato compact e campo com unidade (fob já mostra US$).
+  const regraUnidade = (local, tabela, item, papel) => {
+    const unidade = T[tabela]?.campos[item.campo]?.unidade;
+    const deve = item.formato === 'compact' && Boolean(unidade);
+    if (deve && !item.mostrar_unidade) e(local, `${papel} "${item.campo}" usa compact e tem unidade "${unidade}": declare "mostrar_unidade": true`);
+    if (!deve && item.mostrar_unidade) e(local, `${papel} "${item.campo}" não deve ter "mostrar_unidade": só vale para formato compact com unidade`);
+  };
   const rotulo = (local, nome, papel) => { if (!G.rotulos?.[nome]) e(local, `${papel} "${nome}" sem nome em rotulos no guideline`); };
 
   const bloco = (b, s, local) => {
@@ -277,17 +284,18 @@ export function validarComposicao(texto, { D, G, M }) {
     switch (b.tipo) {
       case 'mensagem_chave':
         campo(local, b.tabela, b.valor.campo, b.analise, b.valor.formato);
-        citada('leituras', b.leitura, 'leitura');
+        regraUnidade(local, b.tabela, b.valor, 'valor da mensagem-chave');
+        if (b.conclusao) citada('conclusoes', b.conclusao, 'conclusão');
+        else citada('leituras', b.leitura, 'leitura');
+        break;
+      case 'topicos':
+        for (const id of b.leituras) citada('leituras', id, 'leitura');
         break;
       case 'indicadores': {
         b.itens.forEach((it) => {
           campo(local, b.tabela, it.campo, b.analise, it.formato);
           rotulo(local, it.campo, 'indicador');
-          // Unidade no cartão: só com formato compact e campo com unidade (fob já mostra US$).
-          const unidade = T[b.tabela]?.campos[it.campo]?.unidade;
-          const deve = it.formato === 'compact' && Boolean(unidade);
-          if (deve && !it.mostrar_unidade) e(local, `indicador "${it.campo}" usa compact e tem unidade "${unidade}": declare "mostrar_unidade": true`);
-          if (!deve && it.mostrar_unidade) e(local, `indicador "${it.campo}" não deve ter "mostrar_unidade": só vale para formato compact com unidade`);
+          regraUnidade(local, b.tabela, it, 'indicador');
         });
         const ind = (sg.analises ?? []).find((a) => a.id === b.analise)?.indicadores ?? [];
         const esperado = ind.map((i) => i.campo).join(', '), atual = b.itens.map((i) => i.campo).join(', ');
@@ -329,7 +337,19 @@ export function validarComposicao(texto, { D, G, M }) {
         b.blocos.forEach((x, i) => bloco(x, s, `${local}.blocos[${i}]`));
         break;
       case 'proprio':
-        if (b.tabela && !T[b.tabela]) e(local, `tabela "${b.tabela}" não existe no data.json`);
+        for (const t of [b.tabela, ...(b.tabelas ?? [])].filter(Boolean)) if (!T[t]) e(local, `tabela "${t}" não existe no data.json`);
+        // Um componente próprio pode exibir textos citados na seção ou ligados à análise dele na metodologia.
+        for (const [tipo, nome] of [['leituras', 'leitura'], ['conclusoes', 'conclusão'], ['ressalvas', 'ressalva']]) {
+          for (const id of b[tipo] ?? []) {
+            usados.add(`${tipo}:${id}`);
+            const item = (M[tipo] ?? []).find((x) => x.id === id);
+            if (!item) e(local, `${nome} "${id}" não existe na metodologia`);
+            else if (!idsDe(sg[tipo]).includes(id) && item.analise !== b.analise)
+              e(local, `${nome} "${id}" não é citada na seção "${s.id}" nem ligada à análise "${b.analise}"`);
+            if (tipo === 'ressalvas') ressalvasExibidas.add(id);
+          }
+        }
+        if (b.cabecalho && s.blocos.length !== 1) e(local, '"cabecalho": true só vale quando o componente próprio é o único bloco da seção');
         break;
     }
   };

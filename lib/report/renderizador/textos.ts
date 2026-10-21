@@ -23,18 +23,26 @@ export function valorUnico(dados: Dados, tabela: string, campo: string, origem: 
   return linhaUnica(dados, { tabela }, origem)[campo];
 }
 
-/** Trechos do texto da metodologia, com cada marcador {id} preenchido e o formato usado nele. */
-export function partes(item: Texto, dados: Dados): { texto: string; formato?: Formato }[] {
-  return item.texto.split(/(\{[a-z][a-z0-9_]*\})/).filter(Boolean).map((trecho) => {
-    const m = trecho.match(/^\{([a-z][a-z0-9_]*)\}$/);
-    if (!m) return { texto: trecho };
-    const ref = item.valores?.find((v) => v.id === m[1]);
-    if (!ref) throw new Error(`"${item.id}": marcador {${m[1]}} sem item em valores`);
-    return { texto: formatar(linhaUnica(dados, ref, `"${item.id}"`)[ref.campo], ref.formato), formato: ref.formato };
-  });
+export type Parte = { texto: string; formato?: Formato; marcador?: boolean; negrito?: boolean };
+
+/**
+ * Trechos do texto da metodologia, com cada marcador {id} preenchido.
+ * Trechos entre **asteriscos duplos** vêm com negrito: true; é a única marcação aceita nos textos.
+ */
+export function partes(item: Texto, dados: Dados): Parte[] {
+  return item.texto.split('**').flatMap((pedaco, i) =>
+    pedaco.split(/(\{[a-z][a-z0-9_]*\})/).filter(Boolean).map((trecho): Parte => {
+      const negrito = i % 2 === 1;
+      const m = trecho.match(/^\{([a-z][a-z0-9_]*)\}$/);
+      if (!m) return { texto: trecho, negrito };
+      const ref = item.valores?.find((v) => v.id === m[1]);
+      if (!ref) throw new Error(`"${item.id}": marcador {${m[1]}} sem item em valores`);
+      return { texto: formatar(linhaUnica(dados, ref, `"${item.id}"`)[ref.campo], ref.formato), formato: ref.formato, marcador: true, negrito };
+    })
+  );
 }
 
-/** Texto da metodologia com cada marcador {id} preenchido pelo valor do data.json. */
+/** Texto da metodologia com cada marcador {id} preenchido pelo valor do data.json, sem marcação de negrito. */
 export function preencher(item: Texto, dados: Dados): string {
   return partes(item, dados).map((p) => p.texto).join('');
 }

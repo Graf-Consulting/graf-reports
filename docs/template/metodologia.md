@@ -35,6 +35,7 @@ ressalvas:                             # todas aparecem no report: na seção qu
 # Regras dos textos:
 # - O texto vai sempre entre aspas, porque marcadores e dois-pontos quebram o YAML sem elas.
 # - Nenhum número ou nome vindo dos dados é escrito à mão no texto; ele entra como marcador.
+# - Trechos entre ** saem em negrito no report, por exemplo "**Plano Nacional de Logística**".
 # - Percentuais, participações e variações vêm prontos no data.json, como campos. O report não calcula.
 # - Números que não vêm dos dados (o ano de um recorte, "os 10 maiores") podem ser escritos no texto.
 ---

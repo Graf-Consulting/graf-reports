@@ -30,6 +30,7 @@ secoes:                                # em ordem de exibição
           - campo: <campo>             # valor do cartão; o nome vem de rotulos
             detalhe: <l1>              # opcional; id de leitura da metodologia exibida abaixo do valor
     leituras: [<l1>]                   # opcional; ids de leituras da metodologia
+                                       # para tópicos com título: [{ id: <l1>, titulo: <Título do tópico> }]
     conclusoes:                        # opcional; conclusões da metodologia exibidas na seção
       - id: <c1>
         titulo: <Abertura em negrito da caixa>   # opcional, ex.: Leitura prioritária

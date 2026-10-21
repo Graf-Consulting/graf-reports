@@ -3,6 +3,10 @@ name: Gerar estudo
 # Modo A da esteira (docs/fluxo-da-esteira.md): quando um push no PR muda as
 # entradas de um estudo em content/reports/<slug>/, o agente roda as skills
 # 01 a 06 e faz commit da composição e da página no próprio PR.
+#
+# Também pode ser disparado à mão (aba Actions → Gerar estudo → Run workflow),
+# informando o número do PR, para gerar de novo sem mudar as entradas, por
+# exemplo depois de uma mudança no kit.
 
 on:
   pull_request:
@@ -10,20 +14,32 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - 'content/reports/**'
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'Número do PR do estudo'
+        required: true
+      slugs:
+        description: 'Slugs a gerar, separados por espaço (vazio: todos os estudos que o PR altera)'
+        required: false
+        default: ''
 
 concurrency:
-  group: gerar-estudo-${{ github.event.pull_request.number }}
+  group: gerar-estudo-${{ github.event.pull_request.number || inputs.pr }}
   cancel-in-progress: false
 
 jobs:
   detectar:
-    # O filtro "paths" olha o diff inteiro do PR. Este job olha só o último push,
+    # No PR, o filtro "paths" olha o diff inteiro. Este job olha só o último push,
     # para que os commits do próprio agente (que só mexem em app/) não gerem de novo.
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: read
     outputs:
       slugs: ${{ steps.slugs.outputs.slugs }}
+      pr: ${{ steps.slugs.outputs.pr }}
+      branch: ${{ steps.slugs.outputs.branch }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,19 +47,43 @@ jobs:
 
       - id: slugs
         env:
+          GH_TOKEN: ${{ github.token }}
+          EVENTO: ${{ github.event_name }}
           ACAO: ${{ github.event.action }}
           ANTES: ${{ github.event.before }}
           DEPOIS: ${{ github.event.pull_request.head.sha }}
           BASE: ${{ github.event.pull_request.base.sha }}
+          PR_EVENTO: ${{ github.event.pull_request.number }}
+          BRANCH_EVENTO: ${{ github.event.pull_request.head.ref }}
+          PR_MANUAL: ${{ inputs.pr }}
+          SLUGS_MANUAL: ${{ inputs.slugs }}
         run: |
-          if [ "$ACAO" = "synchronize" ] && [ -n "$ANTES" ] && git cat-file -e "$ANTES" 2>/dev/null; then
-            DE="$ANTES"
+          if [ "$EVENTO" = "workflow_dispatch" ]; then
+            PR="$PR_MANUAL"
+            ESTADO=$(gh pr view "$PR" --json state --jq .state)
+            if [ "$ESTADO" != "OPEN" ]; then echo "::error::O PR #$PR não está aberto ($ESTADO)."; exit 1; fi
+            BRANCH=$(gh pr view "$PR" --json headRefName --jq .headRefName)
+            if [ -n "$SLUGS_MANUAL" ]; then
+              SLUGS="$SLUGS_MANUAL"
+            else
+              SLUGS=$(gh pr diff "$PR" --name-only | grep '^content/reports/' | cut -d/ -f3 | sort -u | tr '\n' ' ' | xargs)
+            fi
           else
-            DE="$BASE"
+            PR="$PR_EVENTO"
+            BRANCH="$BRANCH_EVENTO"
+            if [ "$ACAO" = "synchronize" ] && [ -n "$ANTES" ] && git cat-file -e "$ANTES" 2>/dev/null; then
+              DE="$ANTES"
+            else
+              DE="$BASE"
+            fi
+            SLUGS=$(git diff --name-only "$DE" "$DEPOIS" -- content/reports/ | cut -d/ -f3 | sort -u | tr '\n' ' ' | xargs)
           fi
-          SLUGS=$(git diff --name-only "$DE" "$DEPOIS" -- content/reports/ | cut -d/ -f3 | sort -u | tr '\n' ' ' | xargs)
-          echo "Estudos com entradas alteradas: ${SLUGS:-nenhum}"
-          echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
+          echo "PR #$PR, branch $BRANCH. Estudos a gerar: ${SLUGS:-nenhum}"
+          {
+            echo "slugs=$SLUGS"
+            echo "pr=$PR"
+            echo "branch=$BRANCH"
+          } >> "$GITHUB_OUTPUT"
 
   gerar:
     needs: detectar
@@ -57,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ needs.detectar.outputs.branch }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -77,8 +117,8 @@ jobs:
             Você é o agente de geração da esteira de estudos deste repositório, no modo A
             (docs/fluxo-da-esteira.md). Siga o CLAUDE.md e as skills em .claude/skills/.
 
-            PR: #${{ github.event.pull_request.number }}, branch ${{ github.event.pull_request.head.ref }}.
-            Estudos com entradas alteradas neste push: ${{ needs.detectar.outputs.slugs }}
+            PR: #${{ needs.detectar.outputs.pr }}, branch ${{ needs.detectar.outputs.branch }}.
+            Estudos a gerar: ${{ needs.detectar.outputs.slugs }}
 
             Para cada slug, siga as skills nesta ordem:
             1. 01-validar-entradas. Se reprovar, comente no PR os erros e avisos e pare este estudo.

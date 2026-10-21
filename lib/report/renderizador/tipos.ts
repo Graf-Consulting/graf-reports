@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 /** Tipos das entradas do estudo e da composição. Espelham os schemas de lib/report/schemas/. */
 
 export type Formato = 'texto' | 'compact' | 'fob' | 'cleanLabel';
@@ -29,7 +31,8 @@ export type SecaoGuideline = {
   titulo?: string;
   intro?: string;
   analises?: { id: string; titulo?: string; descricao?: string; indicadores?: { campo: string; detalhe?: string }[] }[];
-  leituras?: string[];
+  /** Id da leitura, ou objeto com id e o título usado como abertura no bloco de tópicos. */
+  leituras?: (string | { id: string; titulo?: string })[];
   conclusoes?: { id: string; titulo?: string; tipo?: 'destaque' }[];
   ressalvas?: string[];
 };
@@ -46,7 +49,8 @@ export type Guideline = {
 
 export type CampoFormatado = { campo: string; formato?: Formato };
 export type Bloco =
-  | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado; leitura: string }
+  | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado & { mostrar_unidade?: boolean }; leitura?: string; conclusao?: string }
+  | { tipo: 'topicos'; leituras: string[] }
   | { tipo: 'indicadores'; analise: string; tabela: string; itens: (CampoFormatado & { mostrar_unidade?: boolean })[] }
   | { tipo: 'ranking'; analise: string; tabela: string; rotulo: CampoFormatado; valor: string; extra?: string; top?: number }
   | {
@@ -69,6 +73,39 @@ export type Bloco =
   | { tipo: 'destaque'; conclusao: string }
   | { tipo: 'nota'; leitura?: string; ressalvas?: string[] }
   | { tipo: 'grupo'; colunas: 2 | 3; blocos: Bloco[] }
-  | { tipo: 'proprio'; nome: string; analise: string; tabela?: string; props?: Record<string, unknown> };
+  | {
+      tipo: 'proprio';
+      nome: string;
+      analise: string;
+      tabela?: string;
+      tabelas?: string[];
+      leituras?: string[];
+      conclusoes?: string[];
+      ressalvas?: string[];
+      cabecalho?: true;
+      props?: Record<string, unknown>;
+    };
 
 export type Composicao = { slug: string; secoes: { id: string; blocos: Bloco[] }[] };
+
+/** Texto da metodologia entregue a um componente próprio: o conteúdo para exibir (com negrito) e o texto simples. */
+export type TextoPronto = { conteudo: ReactNode; texto: string };
+
+/**
+ * Props que todo componente próprio recebe do renderizador (skill 03-gerar-componente).
+ * Além destas, recebe o que estiver em props no bloco da composição.
+ */
+export type PropsProprio = {
+  /** Linhas da tabela do bloco, quando ele declara tabela. */
+  linhas?: Linha[];
+  /** Tabelas declaradas no bloco, cada uma com campos e linhas. */
+  tabelas: Record<string, Tabela>;
+  /** Textos declarados no bloco, por id, já com os marcadores preenchidos. */
+  textos: { leituras: Record<string, TextoPronto>; conclusoes: Record<string, TextoPronto>; ressalvas: Record<string, TextoPronto> };
+  /** Nomes exibidos dos campos, do guideline. */
+  rotulos: Record<string, string>;
+  /** Título e descrição da análise do bloco na seção do guideline. */
+  analise?: { titulo?: string; descricao?: string };
+  /** Cabeçalho da seção, quando o bloco declara cabecalho: true; o componente o desenha. */
+  secao?: { sobretitulo?: string; titulo?: string; intro?: string };
+};

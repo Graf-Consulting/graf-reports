@@ -143,7 +143,24 @@
             }
           }
         },
-        "leituras": { "$ref": "#/definitions/listaIds" },
+        "leituras": {
+          "description": "Leituras da metodologia exibidas na seção: o id, ou um objeto com id e titulo (abertura em negrito no bloco de tópicos).",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/idKebab" },
+              {
+                "type": "object",
+                "required": ["id"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": { "$ref": "#/definitions/idKebab" },
+                  "titulo": { "$ref": "#/definitions/textoPreenchido" }
+                }
+              }
+            ]
+          }
+        },
         "conclusoes": {
           "description": "Conclusões da metodologia exibidas na seção.",
           "type": "array",

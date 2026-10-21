@@ -41,7 +41,10 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
    - top N e formato de exibição de cada campo, conforme as regras de escrita abaixo;
    - para `indicadores`, os mesmos campos e a mesma ordem de `indicadores` no guideline, com a unidade conforme as regras abaixo;
    - os ids das leituras, conclusões e ressalvas que o bloco exibe.
-   Tudo o que a seção do guideline cita precisa aparecer em algum bloco da seção.
+   Tudo o que a seção do guideline cita precisa aparecer em algum bloco da seção. Casos frequentes:
+   - `mensagem_chave` exibe uma leitura ou uma conclusão (`leitura` ou `conclusao`, nunca as duas); com conclusão, os valores dos marcadores saem em destaque;
+   - `topicos` exibe uma lista de leituras, na ordem do guideline; o título de cada tópico vem de `leituras: [{ id, titulo }]` na seção do guideline;
+   - `proprio` pode receber várias tabelas (`tabelas`) e os textos que exibe (`leituras`, `conclusoes`, `ressalvas`); com `cabecalho: true`, desenha o cabeçalho da seção, e só vale quando é o único bloco dela.
 4. **Ressalvas.** Toda ressalva da metodologia entra no report (ADR-002):
    - citada numa seção do guideline: nessa seção;
    - não citada e ligada a uma análise: na seção que exibe essa análise;
