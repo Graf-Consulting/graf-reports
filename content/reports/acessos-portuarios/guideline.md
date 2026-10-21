@@ -12,6 +12,8 @@ meta:
   - rotulo: Recorte
     leitura: recorte
 tabelas:
+  parametros:
+    campos: [raio_km, limite_ocupacao_elevada_pct, ano_vmda, nota_tecnica, programa_contagem, classificacao_urbana]
   resumo:
     campos: [instalacoes, ufs, links, associacoes, extensao_malha_km, extensao_calculada_km, cobertura_capacidade_pct, cobertura_vmda_pct, extensao_70_km, participacao_70_pct, extensao_100_km]
   instalacoes:

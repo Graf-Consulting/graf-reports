@@ -45,8 +45,12 @@ analises:
 leituras:
   - id: recorte
     analise: resumo-base
-    texto: "{instalacoes} portos organizados em {ufs} UFs, links a até 50 km"
+    texto: "{instalacoes} portos organizados em {ufs} UFs, links a até {raio} km"
     valores:
+      - id: raio
+        tabela: parametros
+        campo: raio_km
+        formato: texto
       - id: instalacoes
         tabela: resumo
         campo: instalacoes
@@ -58,11 +62,42 @@ leituras:
   - id: contexto
     texto: "Os portos organizados dependem da malha rodoviária do seu entorno para receber e escoar cargas. Este relatório reúne, para cada instalação portuária, os trechos rodoviários da sua área de acesso e compara, trecho a trecho, duas grandezas: o volume médio diário anual de veículos (VMDA) e a capacidade diária da via."
   - id: objetivo
-    texto: "O objetivo é apresentar a infraestrutura rodoviária disponível nas regiões próximas aos portos e indicar quanto dessa infraestrutura está suportando o volume de veículos que levam e buscam cargas nos portos e terminais vizinhos. A razão entre VMDA e capacidade, chamada aqui de ocupação, separa os trechos com folga daqueles que se aproximam do limite, a partir de 70%, e dos que já operam acima da capacidade."
+    texto: "O objetivo é apresentar a infraestrutura rodoviária disponível nas regiões próximas aos portos e indicar quanto dessa infraestrutura está suportando o volume de veículos que levam e buscam cargas nos portos e terminais vizinhos. A razão entre VMDA e capacidade, chamada aqui de ocupação, separa os trechos com folga daqueles que se aproximam do limite, a partir de {limite}%, e dos que já operam acima da capacidade."
+    valores:
+      - id: limite
+        tabela: parametros
+        campo: limite_ocupacao_elevada_pct
+        formato: texto
   - id: fonte-e-tratamento
-    texto: "As informações foram obtidas a partir de uma série de tratamentos sobre a base de VMDa do DNIT, estimada no Plano Nacional de Contagem de Tráfego (PNCT) para a rede rodoviária vetorizada. O VMDa é atualizado anualmente pelo DNIT; esta versão usa o VMDa 2025, publicado com a Nota Técnica nº 001/2026. Para cada instalação portuária, foram consultados todos os links situados a até 50 km do ponto da instalação portuária, e esses links foram associados ao cadastro da ANTAQ."
+    texto: "As informações foram obtidas a partir de uma série de tratamentos sobre a base de VMDa do DNIT, estimada no {programa} para a rede rodoviária vetorizada. O VMDa é atualizado anualmente pelo DNIT; esta versão usa o VMDa {ano}, publicado com a {nota}. Para cada instalação portuária, foram consultados todos os links situados a até {raio} km do ponto da instalação portuária, e esses links foram associados ao cadastro da ANTAQ."
+    valores:
+      - id: programa
+        tabela: parametros
+        campo: programa_contagem
+        formato: texto
+      - id: ano
+        tabela: parametros
+        campo: ano_vmda
+        formato: texto
+      - id: nota
+        tabela: parametros
+        campo: nota_tecnica
+        formato: texto
+      - id: raio
+        tabela: parametros
+        campo: raio_km
+        formato: texto
   - id: capacidade
-    texto: "A capacidade de cada link segue a tabela de valores referenciais de capacidade por tipo de superfície, pista e relevo proposta pelo DNIT na Nota Técnica nº 001/2026, que sintetiza a metodologia de estimativa do VMDa 2025. Como o VMDA soma os dois sentidos do trecho, a ocupação o compara com a capacidade dos dois sentidos, o dobro da capacidade diária por sentido da nota técnica."
+    texto: "A capacidade de cada link segue a tabela de valores referenciais de capacidade por tipo de superfície, pista e relevo proposta pelo DNIT na {nota}, que sintetiza a metodologia de estimativa do VMDa {ano}. Como o VMDA soma os dois sentidos do trecho, a ocupação o compara com a capacidade dos dois sentidos, o dobro da capacidade diária por sentido da nota técnica."
+    valores:
+      - id: nota
+        tabela: parametros
+        campo: nota_tecnica
+        formato: texto
+      - id: ano
+        tabela: parametros
+        campo: ano_vmda
+        formato: texto
   - id: detalhe-instalacoes
     analise: resumo-base
     texto: "Portos organizados em {ufs} unidades federativas"
@@ -81,7 +116,12 @@ leituras:
         formato: compact
   - id: detalhe-extensao-malha
     analise: resumo-base
-    texto: "Trechos de rodovias (SNV) que fazem interseção com o raio de 50 km das instalações portuárias"
+    texto: "Trechos de rodovias (SNV) que fazem interseção com o raio de {raio} km das instalações portuárias"
+    valores:
+      - id: raio
+        tabela: parametros
+        campo: raio_km
+        formato: texto
   - id: detalhe-cobertura
     analise: resumo-base
     texto: "dos links com capacidade diária; {cobertura_vmda}% com VMDA"
@@ -102,7 +142,7 @@ leituras:
 conclusoes:
   - id: extensao-ocupacao-elevada
     analise: ocupacao-elevada
-    texto: "{extensao_70} km de rodovias nos acessos portuários operam com 70% ou mais da capacidade diária, {participacao_70}% da extensão em que a ocupação pode ser calculada. Desses, {extensao_100} km já operam acima da capacidade."
+    texto: "{extensao_70} km de rodovias nos acessos portuários operam com {limite}% ou mais da capacidade diária, {participacao_70}% da extensão em que a ocupação pode ser calculada. Desses, {extensao_100} km já operam acima da capacidade."
     valores:
       - id: extensao_70
         tabela: resumo
@@ -116,6 +156,10 @@ conclusoes:
         tabela: resumo
         campo: extensao_100_km
         formato: texto
+      - id: limite
+        tabela: parametros
+        campo: limite_ocupacao_elevada_pct
+        formato: texto
 ressalvas:
   - id: ocupacao-so-com-vmda
     texto: "A ocupação é calculada apenas nos trechos que têm VMDA e capacidade. Trechos sem VMDA aparecem só na camada de capacidade e são somados à parte."
@@ -124,9 +168,19 @@ ressalvas:
   - id: links-compartilhados
     texto: "Um mesmo link pode servir a mais de um porto. Os totais de cada instalação portuária são completos, mas não devem ser somados entre instalações portuárias."
   - id: vmda-estimativa
-    texto: "O VMDa do DNIT é uma estimativa de macrossimulação do tráfego total, de veículos leves e pesados. Links classificados como “Não Simulável”, próximos a grandes áreas urbanas, devem ter seu volume lido com cautela, como recomenda a própria nota técnica."
+    texto: "O VMDa do DNIT é uma estimativa de macrossimulação do tráfego total, de veículos leves e pesados. Links classificados como “{nao_simulavel}”, próximos a grandes áreas urbanas, devem ter seu volume lido com cautela, como recomenda a própria nota técnica."
+    valores:
+      - id: nao_simulavel
+        tabela: parametros
+        campo: classificacao_urbana
+        formato: texto
   - id: raio-em-linha-reta
-    texto: "O raio de 50 km é medido em linha reta a partir do ponto da instalação portuária, e não pela distância de viagem."
+    texto: "O raio de {raio} km é medido em linha reta a partir do ponto da instalação portuária, e não pela distância de viagem."
+    valores:
+      - id: raio
+        tabela: parametros
+        campo: raio_km
+        formato: texto
 ---
 
 # Metodologia: Acessos rodoviários aos portos organizados
@@ -135,7 +189,8 @@ O estudo compara, trecho a trecho, o tráfego estimado pelo DNIT (VMDa 2025 do P
 a até 50 km de cada porto organizado do cadastro da ANTAQ. A razão entre os dois, a ocupação, mostra quanto da malha de acesso aos portos
 já está perto do limite ou acima dele. Os dados vêm das views do schema `graf` do datalake da GRAF
 (`graf.mvw_acessosportuarios_trecho_v2` e `graf.mvw_acessosportuarios_instalacao`), montadas a partir das tabelas do schema `dnit`.
-Todos os totais, faixas e distribuições do `data.json` já vêm calculados.
+Todos os totais, faixas e distribuições do `data.json` já vêm calculados. Os parâmetros do método citados nos textos (raio, limite de ocupação
+elevada, ano do VMDa, nota técnica) ficam na tabela `parametros`, para entrar nos textos como marcadores.
 
 ## Fontes
 
@@ -188,6 +243,7 @@ Uma linha por par instalação portuária × link (`trechos`), com o traçado do
   "Referencial" (link com contagem real), "Não Pavimentada", "Travessia - Não Simulável", "Conector" e "VMDa estimado". Em `legenda`,
   "Não Simulável" marca links não pavimentados, conectores e links sem VMDa ou com menos de 200 veículos em algum sentido, exceto os
   referenciais; os demais valores são faixas de VMDa. Os dois não coincidem necessariamente.
+- **Legenda limpa:** as faixas de VMDa do PNCT (ex.: `2501-5000`) vêm como rótulo (`2.501 a 5.000 veículos/dia`).
 - **Superfície:** códigos do SNV traduzidos (DUP Duplicada, PAV Pavimentada, LEN Leito natural, IMP Implantada, TRV Travessia). Conectores
   não têm superfície, jurisdição nem relevo; a velocidade deles (999 na base) fica vazia em `velocidade_kmh`.
 
