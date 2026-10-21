@@ -289,7 +289,7 @@
     },
 
     "proprio": {
-      "description": "Componente próprio do estudo, em app/reports/<slug>/components/, registrado no registro local.",
+      "description": "Componente próprio do estudo, em app/reports/<slug>/components/, registrado no registro local. Recebe as tabelas pedidas, os textos já preenchidos e os rótulos do guideline; com cabecalho, desenha ele mesmo o cabeçalho da seção.",
       "type": "object",
       "required": ["tipo", "nome", "analise"],
       "additionalProperties": false,
@@ -300,7 +300,39 @@
           "pattern": "^[A-Z][A-Za-z0-9]*$"
         },
         "analise": { "$ref": "#/definitions/idKebab" },
-        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "tabela": {
+          "description": "Opcional. Uma tabela do data.json, entregue em linhas.",
+          "$ref": "#/definitions/nomeTecnico"
+        },
+        "tabelas": {
+          "description": "Opcional. Tabelas do data.json entregues ao componente, cada uma com campos e linhas.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "leituras": {
+          "description": "Opcional. Leituras da metodologia exibidas pelo componente; ele recebe o texto já preenchido.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/idKebab" }
+        },
+        "conclusoes": {
+          "description": "Opcional. Conclusões da metodologia exibidas pelo componente.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/idKebab" }
+        },
+        "ressalvas": {
+          "description": "Opcional. Ressalvas da metodologia exibidas pelo componente.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/idKebab" }
+        },
+        "cabecalho": {
+          "description": "Opcional. true quando o componente desenha o cabeçalho da seção (sobretítulo, título e introdução do guideline), por exemplo para mudá-lo conforme uma seleção. Só vale quando ele é o único bloco da seção.",
+          "const": true
+        },
         "props": {
           "description": "Props do componente: nomes de campo e parâmetros, nunca textos nem estilo.",
           "type": "object"

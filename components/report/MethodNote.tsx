@@ -6,7 +6,7 @@ type Props = {
   /** Texto principal da nota. */
   children: React.ReactNode;
   /** Ressalvas listadas abaixo do texto. */
-  caveats?: string[];
+  caveats?: React.ReactNode[];
 };
 
 /** Nota metodológica em fundo cinza: título à esquerda, texto e ressalvas à direita. */
@@ -21,8 +21,8 @@ export default function MethodNote({ eyebrow, title, children, caveats = [] }: P
           <p className="m-0">{children}</p>
           {caveats.length > 0 && (
             <ul className="mt-3 mb-0 pl-[19px]">
-              {caveats.map((c) => (
-                <li key={c}>{c}</li>
+              {caveats.map((c, i) => (
+                <li key={i}>{c}</li>
               ))}
             </ul>
           )}

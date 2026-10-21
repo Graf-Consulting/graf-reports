@@ -31,7 +31,7 @@ Roda depois de o bloco estar reservado na composição.
 Pare e diga o que falta se:
 
 - as guidelines da plataforma não existem (PRD, Q9 e Q14);
-- não existe o registro local de componentes do estudo no renderizador (ADR-004, consumo no build, passo 5).
+- o renderizador não aceita componentes próprios (prop `proprios` do `Renderizador`, ADR-004, consumo no build, passo 5).
 
 Se um componente do kit já atende ao pedido, não gere nada. Aponte isso no resultado e deixe a decisão para o desenvolvedor. O ADR-001 exige usar o kit sempre que houver solução adequada.
 
@@ -49,10 +49,52 @@ Se um componente do kit já atende ao pedido, não gere nada. Aponte isso no res
 4. Registre o componente no registro local do estudo e confirme que o bloco da composição aponta para ele.
 5. Se o arquivo do componente já existir, não sobrescreva sem aviso. Mostre a diferença e sinalize um possível ajuste manual (RF-16).
 
+## Contrato com o renderizador
+
+O renderizador passa a cada componente próprio as props do tipo `PropsProprio` (`@/lib/report/renderizador`), mais o que estiver em `props` no bloco da composição:
+
+| Prop | Vem de | Conteúdo |
+|---|---|---|
+| `linhas` | `tabela` do bloco | As linhas da tabela, como estão no `data.json` |
+| `tabelas` | `tabelas` do bloco | Cada tabela citada, pelo nome técnico, com campos e linhas |
+| `textos.leituras`, `textos.conclusoes`, `textos.ressalvas` | `leituras`, `conclusoes`, `ressalvas` do bloco | Por id, `{ conteudo, texto }`: `conteudo` já tem os marcadores preenchidos e o negrito aplicado; `texto` é a versão em texto simples |
+| `rotulos` | `rotulos` do guideline | Os textos de interface do estudo |
+| `analise` | `analise` do bloco | Título e descrição da análise na metodologia |
+| `secao` | seção do guideline, só com `cabecalho: true` | Sobretítulo, título e introdução, para o componente desenhar o próprio cabeçalho |
+
+Regras:
+
+- O componente não calcula sobre os dados nem redige texto. Filtrar e ordenar linhas para exibir é permitido; derivar números novos, não.
+- Leituras, conclusões e ressalvas passadas ao componente precisam estar citadas na seção do guideline ou ligadas à mesma análise do bloco na metodologia. O `npm run validar` confere isso.
+- Use `cabecalho: true` só quando o bloco é o único da seção e o cabeçalho depende do estado do componente, como o nome da instalação selecionada. A seção, então, não ganha a moldura padrão.
+
+### Registro local
+
+O registro fica em `app/reports/<slug>/components/index.ts`, um módulo comum, sem `'use client'`, porque o renderizador roda no servidor e lê o mapa:
+
+```ts
+import { MeuGrafico } from './MeuGrafico';
+
+export const proprios = { MeuGrafico };
+```
+
+- Cada componente fica num arquivo `'use client'` e é exportado por nome. Não exporte fábricas de componentes de um módulo cliente: o servidor não consegue chamá-las.
+- A chave do mapa é o `nome` do bloco `proprio` na composição.
+
+### Estado compartilhado
+
+Quando vários componentes próprios do estudo dividem um estado, como a instalação selecionada num mapa e mostrada nos indicadores, crie um provedor de contexto num arquivo `'use client'` e exporte-o também no registro:
+
+```ts
+export { Provedor } from './Selecao';
+```
+
+O renderizador envolve todas as seções com o `Provedor` quando a página o recebe (skill `04-montar-pagina`).
+
 ## Saída
 
 - O componente em `app/reports/<slug>/components/`.
-- O registro local e o vínculo na composição atualizados.
+- O registro local (`components/index.ts`, com `proprios` e, se houver, `Provedor`) e o vínculo na composição atualizados.
 - Um resumo para o PR: o que o componente faz, por que o kit não cobria e qual componente do kit serviu de modelo.
 
 ## Regras
