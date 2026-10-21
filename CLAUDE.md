@@ -32,7 +32,7 @@ Para conferir um estudo localmente, use `npm run dev` e acesse `/reports/<slug>`
 ```
 app/
   layout.tsx, globals.css    compartilhados por todos os estudos
-  page.tsx                   redireciona para o estudo mais recente (maior data_referencia); sem menu
+  page.tsx                   redireciona para o estudo mais recente com página gerada (maior data_referencia); sem menu
   reports/<slug>/            um estudo por pasta
 components/
   layout/                    Header, Footer
