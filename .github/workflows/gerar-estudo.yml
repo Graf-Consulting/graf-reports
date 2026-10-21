@@ -123,14 +123,16 @@ jobs:
             Para cada slug, siga as skills nesta ordem:
             1. 01-validar-entradas. Se reprovar, comente no PR os erros e avisos e pare este estudo.
             2. 02-compor-report.
-            3. 03-gerar-componente, só se o kit não cobrir o que o guideline pede.
+            3. 03-gerar-componente, para cada bloco proprio reservado na composição, quando o kit
+               não cobre o que o guideline pede. Falta de bloco no kit não é motivo para parar.
             4. 04-montar-pagina, só se app/reports/<slug>/page.tsx ainda não existir.
             5. 05-conferir-report. Se reprovar, comente no PR o relatório e pare este estudo.
             6. Faça commit só dos arquivos de app/reports/<slug>/, com mensagem em português
                no padrão Conventional Commits, e dê push na branch do PR.
             7. 06-abrir-pr no modo A: atualize a descrição do PR com o resumo da geração.
 
-            Nunca altere content/, components/, lib/, app/layout.tsx nem app/globals.css.
+            Nunca altere content/, components/ (o kit, na raiz), lib/, app/layout.tsx nem app/globals.css.
+            Componentes próprios ficam em app/reports/<slug>/components/.
             Nunca faça merge.
           claude_args: >-
             --allowedTools

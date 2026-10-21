@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from 'react';
 import { RankingChart } from '@/components/charts';
 import { Footer } from '@/components/layout';
-import { Callout, ChartCard, Emphasis, Hero, KeyMessage, MethodNote, MetricCards, ReportSection, Topicos } from '@/components/report';
+import { Callout, ChartCard, Emphasis, Hero, KeyMessage, MethodNote, MetricCards, ReportSection } from '@/components/report';
 import { dataCurta } from '../format';
 import { ACCENT_SEQUENCE } from '../tokens';
 import BlocoFluxo from './BlocoFluxo';
@@ -51,11 +51,6 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
       const item = busca(lista, id, tipo);
       return [id, { conteudo: rico(item), texto: preencher(item, dados) }];
     }));
-  /** Título dado a uma leitura na seção do guideline (abertura do tópico). */
-  const tituloLeitura = (sg: SecaoGuideline, id: string) => {
-    const l = sg.leituras?.find((x) => (typeof x === 'string' ? x : x.id) === id);
-    return typeof l === 'object' ? l.titulo : undefined;
-  };
 
   const rotulo = (campo: string) => guideline.rotulos?.[campo] ?? campo;
   const unidade = (tabela: string, campo: string) => dados.tabelas[tabela]?.campos[campo]?.unidade;
@@ -83,11 +78,8 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
     switch (b.tipo) {
       case 'mensagem_chave':
         return (
-          <KeyMessage key={chave} value={comUnidade(b.tabela, b.valor, formatar(valorUnico(dados, b.tabela, b.valor.campo, chave), b.valor.formato))}>
-            {/* Com conclusão, os valores dos marcadores saem em negrito. */}
-            {b.conclusao
-              ? rico(busca(metodologia.conclusoes, b.conclusao, 'conclusão'), (p) => Boolean(p.marcador))
-              : leitura(b.leitura ?? '')}
+          <KeyMessage key={chave} value={formatar(valorUnico(dados, b.tabela, b.valor.campo, chave), b.valor.formato)}>
+            {leitura(b.leitura)}
           </KeyMessage>
         );
 
@@ -195,9 +187,6 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
             {b.leitura ? leitura(b.leitura) : null}
           </MethodNote>
         );
-
-      case 'topicos':
-        return <Topicos key={chave} items={b.leituras.map((id) => ({ titulo: tituloLeitura(sg, id), conteudo: leitura(id) }))} />;
 
       case 'grupo':
         return (

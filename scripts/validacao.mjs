@@ -284,12 +284,7 @@ export function validarComposicao(texto, { D, G, M }) {
     switch (b.tipo) {
       case 'mensagem_chave':
         campo(local, b.tabela, b.valor.campo, b.analise, b.valor.formato);
-        regraUnidade(local, b.tabela, b.valor, 'valor da mensagem-chave');
-        if (b.conclusao) citada('conclusoes', b.conclusao, 'conclusão');
-        else citada('leituras', b.leitura, 'leitura');
-        break;
-      case 'topicos':
-        for (const id of b.leituras) citada('leituras', id, 'leitura');
+        citada('leituras', b.leitura, 'leitura');
         break;
       case 'indicadores': {
         b.itens.forEach((it) => {

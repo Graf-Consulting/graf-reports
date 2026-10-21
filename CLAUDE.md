@@ -102,7 +102,7 @@ Os templates dos três arquivos estão em `docs/template/` e os schemas que os v
 1. Valide as três entradas antes de gerar. Se faltar algo ou houver inconsistência, pare e diga o que falta. Exemplos: tabela ou campo citado que não existe no `data.json`, ou análise citada que não está na metodologia.
 2. Não faça cálculos sobre os dados. Todo número exibido vem do `data.json` como está.
 3. Não redija textos. O texto de análise vem das leituras e conclusões da `metodologia.md`, e os valores dos marcadores vêm do `data.json`, formatados por `lib/report/format.ts`. Os textos de interface vêm do `guideline.md`.
-4. Use só componentes do kit ou componentes próprios declarados no `guideline.md`. Não monte layout arbitrário.
+4. Use componentes do kit sempre que atenderem. Quando o guideline pede algo que o kit não cobre, declarado ou não em `componentes_novos`, gere um componente próprio do estudo (skill `03-gerar-componente`), sem parar a geração. Não monte layout arbitrário.
 5. Pedidos de ajuste viram mudança no `guideline.md` e nova geração, nunca edição solta na página. O `guideline.md` só muda quando um desenvolvedor pede explicitamente: no PR, o agente responde a um `@claude` com sugestões de alteração, e uma pessoa as aceita; o agente nunca faz commit em `content/` (skill `07-aplicar-ajuste`; `docs/fluxo-da-esteira.md`).
 6. Não altere as entradas do cientista. Se uma delas estiver errada, aponte o erro no PR.
 7. Antes do PR, rode lint, typecheck, build e `npm run validar -- <slug>` e confira os números exibidos contra o `data.json`.

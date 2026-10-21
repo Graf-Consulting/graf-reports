@@ -10,12 +10,11 @@ O bloco sai da pergunta que a análise responde, e não do formato dos dados.
 
 | A análise quer mostrar... | Bloco | Não use quando... |
 |---|---|---|
-| Um número que resume o estudo inteiro, com uma leitura ou uma conclusão ao lado | `mensagem_chave` | Houver mais de um número igualmente importante; aí use `indicadores` |
+| Um número que resume o estudo inteiro | `mensagem_chave` | Houver mais de um número igualmente importante; aí use `indicadores` |
 | Até 4 números de um mesmo recorte, lado a lado | `indicadores` | Os números precisarem de comparação entre si; aí use `ranking` |
 | Quem é maior ou menor entre categorias | `ranking` | As categorias forem períodos de tempo; aí use `serie_empilhada` |
 | Como a composição de um total muda no tempo | `serie_empilhada` | Os valores não puderem ser somados (preços, taxas, médias, percentuais); o kit ainda não tem gráfico de linhas, então isso pede um componente próprio |
 | Para onde o volume vai, de uma etapa para outra | `fluxo` | Houver mais de 3 etapas ou dezenas de categorias por etapa |
-| Várias leituras curtas de contexto (objetivo, fonte, escopo), cada uma com título | `topicos` | Houver uma leitura só; aí use a introdução da seção |
 | A conclusão principal de uma seção | `destaque` | O texto for contexto ou leitura, e não conclusão; aí use uma leitura na introdução |
 | Como interpretar os resultados e seus limites | `nota` | — |
 | Dois ou três blocos que se comparam | `grupo` | Os blocos tratarem de coisas diferentes ou tiverem alturas muito diferentes |

@@ -41,10 +41,7 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
    - top N e formato de exibição de cada campo, conforme as regras de escrita abaixo;
    - para `indicadores`, os mesmos campos e a mesma ordem de `indicadores` no guideline, com a unidade conforme as regras abaixo;
    - os ids das leituras, conclusões e ressalvas que o bloco exibe.
-   Tudo o que a seção do guideline cita precisa aparecer em algum bloco da seção. Casos frequentes:
-   - `mensagem_chave` exibe uma leitura ou uma conclusão (`leitura` ou `conclusao`, nunca as duas); com conclusão, os valores dos marcadores saem em destaque;
-   - `topicos` exibe uma lista de leituras, na ordem do guideline; o título de cada tópico vem de `leituras: [{ id, titulo }]` na seção do guideline;
-   - `proprio` pode receber várias tabelas (`tabelas`) e os textos que exibe (`leituras`, `conclusoes`, `ressalvas`); com `cabecalho: true`, desenha o cabeçalho da seção, e só vale quando é o único bloco dela.
+   Tudo o que a seção do guideline cita precisa aparecer em algum bloco da seção. Quando nenhum bloco do kit exibe o que a seção pede na forma descrita no guideline, use um bloco `proprio` (passo 5). Ele pode receber várias tabelas (`tabelas`) e os textos que exibe (`leituras`, `conclusoes`, `ressalvas`); com `cabecalho: true`, desenha o cabeçalho da seção, e só vale quando é o único bloco dela.
 4. **Ressalvas.** Toda ressalva da metodologia entra no report (ADR-002):
    - citada numa seção do guideline: nessa seção;
    - não citada e ligada a uma análise: na seção que exibe essa análise;
@@ -52,6 +49,7 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
 5. **Componentes próprios.** Reserve o bloco na composição e deixe a criação do código para `03-gerar-componente` quando:
    - o guideline declarar o componente em `componentes_novos`; ou
    - o guideline pedir algo que nenhum componente do kit cobre.
+   Falta de bloco no kit não é motivo para parar a geração: reserve o bloco `proprio`, com as tabelas e os textos que ele exibe, e siga para `03-gerar-componente`. Pare só se faltar algo nas entradas.
 6. **Validação.** Rode `npm run validar -- <slug>` e corrija a composição até ela passar. O script valida o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
 7. **Proteção de ajustes manuais.** Se `app/reports/<slug>/composicao.json` já existir, compare com a nova versão. Liste o que mudou e sinalize qualquer diferença que não venha de mudança nas entradas. Uma diferença assim pode ser ajuste manual do desenvolvedor e não pode ser descartada sem aviso (RF-16).
 

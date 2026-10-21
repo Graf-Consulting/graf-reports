@@ -31,8 +31,7 @@ export type SecaoGuideline = {
   titulo?: string;
   intro?: string;
   analises?: { id: string; titulo?: string; descricao?: string; indicadores?: { campo: string; detalhe?: string }[] }[];
-  /** Id da leitura, ou objeto com id e o título usado como abertura no bloco de tópicos. */
-  leituras?: (string | { id: string; titulo?: string })[];
+  leituras?: string[];
   conclusoes?: { id: string; titulo?: string; tipo?: 'destaque' }[];
   ressalvas?: string[];
 };
@@ -49,8 +48,7 @@ export type Guideline = {
 
 export type CampoFormatado = { campo: string; formato?: Formato };
 export type Bloco =
-  | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado & { mostrar_unidade?: boolean }; leitura?: string; conclusao?: string }
-  | { tipo: 'topicos'; leituras: string[] }
+  | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado; leitura: string }
   | { tipo: 'indicadores'; analise: string; tabela: string; itens: (CampoFormatado & { mostrar_unidade?: boolean })[] }
   | { tipo: 'ranking'; analise: string; tabela: string; rotulo: CampoFormatado; valor: string; extra?: string; top?: number }
   | {

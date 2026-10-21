@@ -230,16 +230,6 @@ secoes:
     ressalvas: [redirecionamento]                    # opcional
 ```
 
-**Tópicos com título.** Quando a seção apresenta várias leituras como uma lista (contexto, objetivo, fonte...), cada leitura pode ganhar um título, que sai em negrito no começo do tópico:
-
-```yaml
-    leituras:
-      - id: contexto
-        titulo: Contexto
-      - id: objetivo
-        titulo: Objetivo
-```
-
 **Cartões de indicadores.** Para mostrar números soltos em cartões, liste-os em `indicadores` dentro da análise. O nome do cartão vem de `rotulos`, o valor vem do `data.json` e o texto abaixo do valor vem de uma leitura da metodologia:
 
 ```yaml
