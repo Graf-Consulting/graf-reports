@@ -37,6 +37,7 @@ rotulos:
   regiao: Região
   uf: Estado
   instalacao: Instalação portuária
+  ponto: Instalação portuária selecionada
   rotulo: Instalação portuária
   faixa: Faixa de ocupação
   extensao_km: Extensão
