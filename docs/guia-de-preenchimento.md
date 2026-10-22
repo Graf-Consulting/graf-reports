@@ -98,6 +98,7 @@ Um campo só pode ter valor `null` se tiver `"nulo": true`.
 - **Indicadores soltos** (o total de um ano, o principal destino) ficam numa tabela de uma linha só, como a `summary` do exemplo. Tabela de uma linha não precisa de `chave`.
 - **Rótulos limpos.** Entregue os nomes como devem aparecer: `ITAJAI`, e não `0927800 - ITAJAI`. Se vierem sujos, o report limpa e o PR avisa, mas o ideal é que cheguem prontos.
 - **Percentuais e variações prontos**, como campos. O report não calcula.
+- **Geometria simplificada.** Pontos (`geo_ponto`) e traçados (`geo_linhas`) vão inteiros para a página, que fica tão pesada quanto eles. Simplifique os traçados antes de entregar (por exemplo, Douglas-Peucker com tolerância da ordem de 20 m): o desenho não muda nos zooms do report e o arquivo cai mais de 90% (ADR-007).
 - **Só dados que podem ser publicados.** Tudo o que está no `data.json` fica público com o report.
 
 ## 4. `metodologia.md`
@@ -169,6 +170,7 @@ O report exibe: *"Em 2026, Países Baixos (Holanda) é o principal mercado no re
 |---|---|---|
 | `texto` | qualquer | `Países Baixos (Holanda)` |
 | `compact` | número | `271344120` → `271,3 mi` |
+| `inteiro` | número | `24651` → `24.651` |
 | `fob` | número em dólar | `1132620598` → `US$ 1,1 bi` |
 | `cleanLabel` | texto | `0927800 - ITAJAI` → `ITAJAI` |
 

@@ -30,7 +30,7 @@
     },
     "formato": {
       "description": "Formatador de lib/report/format.ts. Omita o campo para exibir o valor como está.",
-      "enum": ["compact", "fob", "cleanLabel"]
+      "enum": ["compact", "inteiro", "fob", "cleanLabel"]
     },
     "campoFormatado": {
       "description": "Um campo do data.json, com formato opcional de exibição.",
@@ -69,7 +69,7 @@
       "required": ["tipo"],
       "properties": {
         "tipo": {
-          "enum": ["mensagem_chave", "indicadores", "ranking", "serie_empilhada", "fluxo", "destaque", "nota", "grupo", "proprio"]
+          "enum": ["mensagem_chave", "indicadores", "ranking", "serie_empilhada", "fluxo", "destaque", "nota", "grupo", "mapa_roscas", "mapa_trechos", "proprio"]
         }
       },
       "allOf": [
@@ -81,6 +81,8 @@
         { "if": { "properties": { "tipo": { "const": "destaque" } } }, "then": { "$ref": "#/definitions/destaque" } },
         { "if": { "properties": { "tipo": { "const": "nota" } } }, "then": { "$ref": "#/definitions/nota" } },
         { "if": { "properties": { "tipo": { "const": "grupo" } } }, "then": { "$ref": "#/definitions/grupo" } },
+        { "if": { "properties": { "tipo": { "const": "mapa_roscas" } } }, "then": { "$ref": "#/definitions/mapa_roscas" } },
+        { "if": { "properties": { "tipo": { "const": "mapa_trechos" } } }, "then": { "$ref": "#/definitions/mapa_trechos" } },
         { "if": { "properties": { "tipo": { "const": "proprio" } } }, "then": { "$ref": "#/definitions/proprio" } }
       ]
     },
@@ -285,6 +287,120 @@
             ]
           }
         }
+      }
+    },
+
+    "selecao": {
+      "description": "Opcional. Campo da seleção compartilhada da página (ADR-007), igual ao campo id do bloco: o bloco publica o id escolhido, e outros blocos e componentes próprios leem pelo mesmo campo (useSelecao).",
+      "$ref": "#/definitions/nomeTecnico"
+    },
+
+    "mapa_roscas": {
+      "description": "Catálogo · MapaRoscas (ADR-007). Mapa com uma rosca por linha da tabela, no ponto dela, dividida pelas fatias de outra tabela e com área proporcional ao tamanho. Ao lado, a lista com barra empilhada; acima, filtros em cascata; ao clicar, caixa com os valores. Títulos de filtros, colunas e total vêm de rotulos; a contagem usa rotulos[<tabela>], se houver; o título e a descrição da análise ficam sobre a lista.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "id", "rotulo", "ponto", "tamanho", "ordem", "fatias"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "mapa_roscas" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "description": "Tabela com uma linha por ponto.", "$ref": "#/definitions/nomeTecnico" },
+        "id": { "description": "Campo que identifica o ponto; liga a tabela às fatias.", "$ref": "#/definitions/nomeTecnico" },
+        "rotulo": { "description": "Nome exibido do ponto.", "$ref": "#/definitions/campoFormatado" },
+        "ponto": { "description": "Campo geo_ponto ([lat, lon]).", "$ref": "#/definitions/nomeTecnico" },
+        "tamanho": { "description": "Valor que define a área da rosca e o comprimento da barra na lista; é o total exibido.", "$ref": "#/definitions/campoFormatado" },
+        "ordem": {
+          "description": "Campos que ordenam a lista, do maior para o menor; o segundo desempata o primeiro.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "filtros": {
+          "description": "Opcional. Campos de texto usados como filtros em cascata, na ordem.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "fatias": {
+          "description": "Tabela das fatias: uma linha por ponto e categoria, com o campo id do bloco.",
+          "type": "object",
+          "required": ["tabela", "categoria", "ordem", "valor"],
+          "additionalProperties": false,
+          "properties": {
+            "tabela": { "$ref": "#/definitions/nomeTecnico" },
+            "categoria": { "description": "Campo com o nome da categoria (faixa).", "$ref": "#/definitions/nomeTecnico" },
+            "ordem": { "description": "Campo numérico com a ordem das categorias; define a cor na escala sequencial.", "$ref": "#/definitions/nomeTecnico" },
+            "valor": { "$ref": "#/definitions/campoFormatado" },
+            "parcela": { "description": "Opcional. Campo com a parcela do total, exibida na caixa.", "$ref": "#/definitions/nomeTecnico" }
+          }
+        },
+        "selecao": { "$ref": "#/definitions/selecao" }
+      }
+    },
+
+    "mapa_trechos": {
+      "description": "Catálogo · MapaTrechos (ADR-007). Seletor de ponto e, no mapa, os trechos ligados a ele em camadas de linhas, cada uma com espessura pelo valor. O leitor liga e desliga camadas, muda a ordem e clica num trecho para ver os atributos. Nomes de camadas, legenda e atributos vêm de rotulos (com a unidade do campo).",
+      "type": "object",
+      "required": ["tipo", "analise", "pontos", "tabela", "chave", "linhas", "nome", "camadas", "detalhe"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "mapa_trechos" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "pontos": {
+          "description": "Tabela dos pontos do seletor. O rótulo do ponto no mapa e na legenda vem de rotulos[<ponto>]; sem ele, de rotulos[<rotulo>].",
+          "type": "object",
+          "required": ["tabela", "id", "rotulo", "ponto"],
+          "additionalProperties": false,
+          "properties": {
+            "tabela": { "$ref": "#/definitions/nomeTecnico" },
+            "id": { "$ref": "#/definitions/nomeTecnico" },
+            "rotulo": { "$ref": "#/definitions/campoFormatado" },
+            "ponto": { "description": "Campo geo_ponto ([lat, lon]).", "$ref": "#/definitions/nomeTecnico" }
+          }
+        },
+        "tabela": { "description": "Tabela dos trechos.", "$ref": "#/definitions/nomeTecnico" },
+        "chave": { "description": "Campo dos trechos com o id do ponto a que pertencem.", "$ref": "#/definitions/nomeTecnico" },
+        "linhas": { "description": "Campo geo_linhas com o traçado.", "$ref": "#/definitions/nomeTecnico" },
+        "nome": { "description": "Campo exibido ao passar o mouse no trecho (ex.: código da rodovia).", "$ref": "#/definitions/nomeTecnico" },
+        "camadas": {
+          "description": "Camadas na ordem inicial, a primeira por cima. Trecho sem valor no campo não aparece na camada.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["campo", "espessura"],
+            "additionalProperties": false,
+            "properties": {
+              "campo": { "description": "Campo numérico da camada.", "$ref": "#/definitions/nomeTecnico" },
+              "espessura": {
+                "description": "passo: 2 px até o passo e +1 px a cada passo acima dele. classe + classes: 2 px na primeira classe e +1 px a cada classe seguinte.",
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "required": ["passo"],
+                    "additionalProperties": false,
+                    "properties": { "passo": { "type": "number", "exclusiveMinimum": 0 } }
+                  },
+                  {
+                    "type": "object",
+                    "required": ["classe", "classes"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "classe": { "$ref": "#/definitions/nomeTecnico" },
+                      "classes": { "description": "Valores do campo de classe, da mais fina para a mais grossa.", "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string" } }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "detalhe": {
+          "description": "Campos exibidos na caixa do trecho, na ordem.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/nomeTecnico" }
+        },
+        "selecao": { "$ref": "#/definitions/selecao" }
       }
     },
 

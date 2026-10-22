@@ -3,6 +3,19 @@ export function compact(v: number) {
   return new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(v || 0);
 }
 
+/** Número inteiro em pt-BR, com separador de milhar (ex.: 24651 → 24.651). */
+export function inteiro(v: number) {
+  return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(v || 0);
+}
+
+/** Número em pt-BR com até `casas` decimais (ex.: 73.456 → 73,5). */
+export function decimal(v: number, casas = 1) {
+  return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: casas }).format(v || 0);
+}
+
+/** Valor com a unidade depois; % vai colado (ex.: 88%, 611 km). */
+export const comUnidade = (texto: string, unidade?: string) => (!unidade ? texto : unidade === '%' ? `${texto}%` : `${texto} ${unidade}`);
+
 /** Valor em dólares no formato compacto (ex.: US$ 1,1 bi). */
 export const fob = (v: number) => `US$ ${compact(v)}`;
 

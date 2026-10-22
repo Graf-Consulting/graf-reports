@@ -36,6 +36,12 @@ export const AREA_PALETTE = [
   '#52B788', '#D62828', '#023E8A', '#48CAE4', '#9D4EDD', '#F77F00',
 ];
 
+/** Faixas em escala sequencial, da menor para a maior (ex.: faixas de ocupação nos mapas). */
+export const BAND_PALETTE = ['#6EC1E4', '#52B788', '#FFD166', '#FF9F1C', '#E63946', '#8B1E24'];
+
+/** Cores das camadas de linhas nos mapas, na ordem das camadas declarada na composição. */
+export const MAP_LAYER_PALETTE = ['#E63946', '#2D6A4F', '#0077B6', '#9D4EDD', '#F77F00'];
+
 /** Cores dos nós de cada camada do Sankey, da esquerda para a direita. */
 export const SANKEY_NODE_PALETTES = [
   ['#d9edf6', '#c9e7d0', '#f8dfc5', '#e2d6eb', '#d8e5e4', '#f1d7d3'],

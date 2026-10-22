@@ -1,11 +1,13 @@
 import type { ComponentType, ReactNode } from 'react';
 import { RankingChart } from '@/components/charts';
 import { Footer } from '@/components/layout';
-import { Callout, ChartCard, Emphasis, Hero, KeyMessage, MethodNote, MetricCards, ReportSection } from '@/components/report';
+import { MapaRoscas, MapaTrechos } from '@/components/maps';
+import { Callout, ChartCard, Emphasis, Hero, KeyMessage, MethodNote, MetricCards, ReportSection, SelecaoProvider } from '@/components/report';
 import { dataCurta } from '../format';
 import { ACCENT_SEQUENCE } from '../tokens';
 import BlocoFluxo from './BlocoFluxo';
 import BlocoSerieEmpilhada from './BlocoSerieEmpilhada';
+import { dadosRoscas, dadosTrechos } from './mapas';
 import { formatar, partes, preencher, tituloEixo, valorHover, valorUnico, type Parte } from './textos';
 import type { Bloco, Composicao, Dados, Formato, Guideline, Linha, Metodologia, PropsProprio, SecaoGuideline, Tabela, Texto, TextoPronto } from './tipos';
 
@@ -49,7 +51,7 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
   const pronto = (lista: Texto[] | undefined, ids: string[] | undefined, tipo: string): Record<string, TextoPronto> =>
     Object.fromEntries((ids ?? []).map((id) => {
       const item = busca(lista, id, tipo);
-      return [id, { conteudo: rico(item), texto: preencher(item, dados) }];
+      return [id, { conteudo: rico(item), destacado: rico(item, (p) => Boolean(p.marcador)), texto: preencher(item, dados) }];
     }));
 
   const rotulo = (campo: string) => guideline.rotulos?.[campo] ?? campo;
@@ -195,6 +197,20 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
           </div>
         );
 
+      case 'mapa_roscas':
+        return (
+          <MapaRoscas
+            key={chave}
+            titulo={analiseG?.titulo}
+            descricao={analiseG?.descricao}
+            selecao={b.selecao}
+            {...dadosRoscas(b, dados, rotulo, guideline.rotulos ?? {})}
+          />
+        );
+
+      case 'mapa_trechos':
+        return <MapaTrechos key={chave} selecao={b.selecao} {...dadosTrechos(b, dados, rotulo, guideline.rotulos ?? {})} />;
+
       case 'proprio': {
         const Proprio = proprios[b.nome];
         if (!Proprio) throw new Error(`componente próprio "${b.nome}" não está no registro local do estudo`);
@@ -251,8 +267,10 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
 
   return (
     <>
-      {/* O provedor do estudo, se houver, envolve a página para os componentes próprios compartilharem estado. */}
-      <main>{Provedor ? <Provedor>{conteudo}</Provedor> : conteudo}</main>
+      {/* A seleção do kit (ADR-007) e o provedor do estudo, se houver, envolvem a página para os blocos compartilharem estado. */}
+      <main>
+        <SelecaoProvider>{Provedor ? <Provedor>{conteudo}</Provedor> : conteudo}</SelecaoProvider>
+      </main>
       {/* O rodapé traz a fonte e a data do snapshot deste estudo (metadata do data.json). */}
       <Footer fonte={fontes} elaboracao={dataCurta(metadata.data_referencia)} />
     </>

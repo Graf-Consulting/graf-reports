@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /** Tipos das entradas do estudo e da composição. Espelham os schemas de lib/report/schemas/. */
 
-export type Formato = 'texto' | 'compact' | 'fob' | 'cleanLabel';
+export type Formato = 'texto' | 'compact' | 'inteiro' | 'fob' | 'cleanLabel';
 export type Linha = Record<string, unknown>;
 
 export type Campo = { tipo: string; descricao: string; unidade?: string; nulo?: boolean };
@@ -47,6 +47,8 @@ export type Guideline = {
 };
 
 export type CampoFormatado = { campo: string; formato?: Formato };
+/** Espessura das linhas de uma camada do mapa: por degraus de valor, ou por classe (na ordem das classes). */
+export type Espessura = { passo: number } | { classe: string; classes: string[] };
 export type Bloco =
   | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado; leitura: string }
   | { tipo: 'indicadores'; analise: string; tabela: string; itens: (CampoFormatado & { mostrar_unidade?: boolean })[] }
@@ -72,6 +74,31 @@ export type Bloco =
   | { tipo: 'nota'; leitura?: string; ressalvas?: string[] }
   | { tipo: 'grupo'; colunas: 2 | 3; blocos: Bloco[] }
   | {
+      tipo: 'mapa_roscas';
+      analise: string;
+      tabela: string;
+      id: string;
+      rotulo: CampoFormatado;
+      ponto: string;
+      tamanho: CampoFormatado;
+      ordem: string[];
+      filtros?: string[];
+      fatias: { tabela: string; categoria: string; ordem: string; valor: CampoFormatado; parcela?: string };
+      selecao?: string;
+    }
+  | {
+      tipo: 'mapa_trechos';
+      analise: string;
+      pontos: { tabela: string; id: string; rotulo: CampoFormatado; ponto: string };
+      tabela: string;
+      chave: string;
+      linhas: string;
+      nome: string;
+      camadas: { campo: string; espessura: Espessura }[];
+      detalhe: string[];
+      selecao?: string;
+    }
+  | {
       tipo: 'proprio';
       nome: string;
       analise: string;
@@ -86,8 +113,11 @@ export type Bloco =
 
 export type Composicao = { slug: string; secoes: { id: string; blocos: Bloco[] }[] };
 
-/** Texto da metodologia entregue a um componente próprio: o conteúdo para exibir (com negrito) e o texto simples. */
-export type TextoPronto = { conteudo: ReactNode; texto: string };
+/**
+ * Texto da metodologia entregue a um componente próprio: o conteúdo para exibir (com negrito),
+ * a versão com os valores dos marcadores também em destaque e o texto simples.
+ */
+export type TextoPronto = { conteudo: ReactNode; destacado: ReactNode; texto: string };
 
 /**
  * Props que todo componente próprio recebe do renderizador (skill 03-gerar-componente).
@@ -106,4 +136,5 @@ export type PropsProprio = {
   analise?: { titulo?: string; descricao?: string };
   /** Cabeçalho da seção, quando o bloco declara cabecalho: true; o componente o desenha. */
   secao?: { sobretitulo?: string; titulo?: string; intro?: string };
+  // A seleção compartilhada com os blocos do kit (ex.: mapas) é lida com useSelecao(campo), de @/components/report.
 };

@@ -15,7 +15,7 @@ const schemas = Object.fromEntries(
 );
 
 /** Tipos de campo aceitos por cada formato; null aceita qualquer tipo. */
-const FORMATO_TIPO = { texto: null, fob: ['numero'], compact: ['numero'], cleanLabel: ['texto'] };
+const FORMATO_TIPO = { texto: null, fob: ['numero'], compact: ['numero'], inteiro: ['numero'], cleanLabel: ['texto'] };
 
 /** Formato do valor de cada tipo de campo do data.json. */
 const VALOR_DO_TIPO = {
@@ -269,6 +269,17 @@ export function validarComposicao(texto, { D, G, M }) {
     if (!deve && item.mostrar_unidade) e(local, `${papel} "${item.campo}" não deve ter "mostrar_unidade": só vale para formato compact com unidade`);
   };
   const rotulo = (local, nome, papel) => { if (!G.rotulos?.[nome]) e(local, `${papel} "${nome}" sem nome em rotulos no guideline`); };
+  // Campo com o tipo que o bloco exige (ex.: geo_ponto no ponto de um mapa).
+  const tipo = (local, tabela, nome, esperado) => {
+    const def = T[tabela]?.campos[nome];
+    if (def && def.tipo !== esperado) e(local, `campo "${tabela}.${nome}" é ${def.tipo}; o bloco exige ${esperado}`);
+  };
+  // Textos ficam no guideline e na metodologia; props de componente próprio só trazem nomes técnicos e parâmetros.
+  const textoEmProps = (local, v, caminho = 'props') => {
+    if (typeof v === 'string' && !/^[a-z0-9_.-]*$/.test(v)) e(local, `${caminho} parece trazer texto ("${v.slice(0, 40)}"); textos de interface vêm do guideline e os de análise, da metodologia`);
+    else if (Array.isArray(v)) v.forEach((x, i) => textoEmProps(local, x, `${caminho}[${i}]`));
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) textoEmProps(local, x, `${caminho}.${k}`);
+  };
 
   const bloco = (b, s, local) => {
     const sg = secaoG[s.id] ?? {};
@@ -345,7 +356,57 @@ export function validarComposicao(texto, { D, G, M }) {
           }
         }
         if (b.cabecalho && s.blocos.length !== 1) e(local, '"cabecalho": true só vale quando o componente próprio é o único bloco da seção');
+        if (b.props) textoEmProps(local, b.props);
         break;
+      case 'mapa_roscas': {
+        const f = b.fatias;
+        campo(local, b.tabela, b.id, b.analise);
+        campo(local, b.tabela, b.rotulo.campo, b.analise, b.rotulo.formato);
+        campo(local, b.tabela, b.ponto, b.analise);
+        tipo(local, b.tabela, b.ponto, 'geo_ponto');
+        campo(local, b.tabela, b.tamanho.campo, b.analise, b.tamanho.formato);
+        tipo(local, b.tabela, b.tamanho.campo, 'numero');
+        rotulo(local, b.tamanho.campo, 'tamanho');
+        b.ordem.forEach((c) => { campo(local, b.tabela, c, b.analise); tipo(local, b.tabela, c, 'numero'); });
+        (b.filtros ?? []).forEach((c) => { campo(local, b.tabela, c, b.analise); rotulo(local, c, 'filtro'); });
+        campo(local, f.tabela, b.id, b.analise);
+        campo(local, f.tabela, f.categoria, b.analise);
+        rotulo(local, f.categoria, 'categoria');
+        campo(local, f.tabela, f.ordem, b.analise);
+        tipo(local, f.tabela, f.ordem, 'numero');
+        campo(local, f.tabela, f.valor.campo, b.analise, f.valor.formato);
+        tipo(local, f.tabela, f.valor.campo, 'numero');
+        rotulo(local, f.valor.campo, 'valor das fatias');
+        if (f.parcela) { campo(local, f.tabela, f.parcela, b.analise); tipo(local, f.tabela, f.parcela, 'numero'); rotulo(local, f.parcela, 'parcela'); }
+        if (b.selecao && b.selecao !== b.id) e(local, `"selecao" deve ser o campo id do bloco ("${b.id}")`);
+        break;
+      }
+      case 'mapa_trechos': {
+        const p = b.pontos;
+        campo(local, p.tabela, p.id, b.analise);
+        campo(local, p.tabela, p.rotulo.campo, b.analise, p.rotulo.formato);
+        rotulo(local, p.rotulo.campo, 'rótulo dos pontos');
+        campo(local, p.tabela, p.ponto, b.analise);
+        tipo(local, p.tabela, p.ponto, 'geo_ponto');
+        campo(local, b.tabela, b.chave, b.analise);
+        campo(local, b.tabela, b.linhas, b.analise);
+        tipo(local, b.tabela, b.linhas, 'geo_linhas');
+        campo(local, b.tabela, b.nome, b.analise);
+        rotulo(local, b.nome, 'nome do trecho');
+        for (const c of b.camadas) {
+          campo(local, b.tabela, c.campo, b.analise);
+          tipo(local, b.tabela, c.campo, 'numero');
+          rotulo(local, c.campo, 'camada');
+          if (c.espessura.classe) {
+            campo(local, b.tabela, c.espessura.classe, b.analise);
+            const existentes = new Set((T[b.tabela]?.linhas ?? []).map((l) => l[c.espessura.classe]));
+            for (const cl of c.espessura.classes) if (!existentes.has(cl)) e(local, `classe ${JSON.stringify(cl)} não existe em "${c.espessura.classe}"`);
+          }
+        }
+        b.detalhe.forEach((c) => { campo(local, b.tabela, c, b.analise); rotulo(local, c, 'atributo do trecho'); });
+        if (b.selecao && b.selecao !== p.id) e(local, `"selecao" deve ser o campo id dos pontos ("${p.id}")`);
+        break;
+      }
     }
   };
   C.secoes.forEach((s) => s.blocos.forEach((b, i) => bloco(b, s, `secoes.${s.id}.blocos[${i}]`)));

@@ -95,7 +95,7 @@
           },
           "formato": {
             "description": "texto (valor como está) ou um formatador de lib/report/format.ts.",
-            "enum": ["texto", "compact", "fob", "cleanLabel"]
+            "enum": ["texto", "compact", "inteiro", "fob", "cleanLabel"]
           }
         }
       }
