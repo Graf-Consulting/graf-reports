@@ -220,8 +220,7 @@ Componente `MapaAcessosPortuarios`, com o painel de controle (seletor, camadas e
 começa por cima, depois capacidade e VMDA; todas começam ligadas. O mapa abre no Brasil inteiro.
 
 ## indicadores-da-selecao
-Componente `IndicadoresInstalacao`, ligado à seleção do mapa. Quando há seleção, a introdução passa a citar o nome da instalação portuária
-selecionada. As distribuições ficam em grade de cartões, e a tabela de ocupação por rodovia rola dentro do cartão quando é longa.
+Ligado à seleção do mapa. As distribuições ficam em grade de cartões, e a tabela de ocupação por rodovia rola dentro do cartão quando é longa.
 
 ## cadastro
 Componente `CadastroInstalacao`, ligado à seleção do mapa.
