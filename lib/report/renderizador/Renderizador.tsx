@@ -95,7 +95,7 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
     switch (b.tipo) {
       case 'mensagem_chave':
         return (
-          <KeyMessage key={chave} value={formatar(valorUnico(dados, b.tabela, b.valor.campo, chave), b.valor.formato)}>
+          <KeyMessage key={chave} value={formatar(valorUnico(dados, b.tabela, b.valor.campo, chave), b.valor.formato)} centralizar={b.centralizar}>
             {leitura(b.leitura)}
           </KeyMessage>
         );
@@ -236,7 +236,13 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
 
       case 'nota':
         return (
-          <MethodNote key={chave} eyebrow={sg.sobretitulo ?? ''} title={sg.titulo ?? ''} caveats={(b.ressalvas ?? []).map(ressalva)}>
+          <MethodNote
+            key={chave}
+            eyebrow={sg.sobretitulo ?? ''}
+            title={sg.titulo ?? ''}
+            caveats={(b.ressalvas ?? []).map(ressalva)}
+            marcadores={b.marcadores}
+          >
             {b.leitura ? leitura(b.leitura) : null}
           </MethodNote>
         );
