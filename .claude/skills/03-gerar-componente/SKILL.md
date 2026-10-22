@@ -65,6 +65,8 @@ O renderizador passa a cada componente próprio as props do tipo `PropsProprio` 
 Regras:
 
 - O componente não calcula sobre os dados nem redige texto. Filtrar e ordenar linhas para exibir é permitido; derivar números novos, não.
+- Texto da metodologia é exibido por `conteudo` (ou `destacado`, quando o guideline pede os valores em destaque), nunca por `texto`. O `texto` é a versão simples, sem o negrito marcado com `**` na metodologia; não o recorte nem o transforme para criar títulos ou destaques que a metodologia não marcou.
+- Ao usar componentes do kit dentro do componente próprio, use as opções que o guideline pedir, como `centralizar` no `KeyMessage`.
 - Textos também não vão em `props` na composição: lá só cabem nomes técnicos e parâmetros (minúsculas, números, `_`, `-` e `.`), e o `npm run validar` reprova o resto. Um título que o componente precisa exibir vem de `rotulos`, de uma leitura da metodologia ou do cabeçalho da seção.
 - Leituras, conclusões e ressalvas passadas ao componente precisam estar citadas na seção do guideline ou ligadas à mesma análise do bloco na metodologia. O `npm run validar` confere isso.
 - Use `cabecalho: true` só quando o bloco é o único da seção e o cabeçalho depende do estado do componente, como o nome da instalação selecionada. A seção, então, não ganha a moldura padrão.

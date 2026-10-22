@@ -103,6 +103,10 @@
         "leitura": {
           "description": "Id da leitura da metodologia exibida ao lado do valor.",
           "$ref": "#/definitions/idKebab"
+        },
+        "centralizar": {
+          "description": "Opcional. true centraliza o texto na altura do valor, quando o guideline pede.",
+          "const": true
         }
       }
     },
@@ -273,6 +277,10 @@
           "type": "array",
           "uniqueItems": true,
           "items": { "$ref": "#/definitions/idKebab" }
+        },
+        "marcadores": {
+          "description": "Opcional. true mostra as ressalvas com marcador e espaço entre os itens, quando o guideline pede a lista assim.",
+          "const": true
         }
       }
     },

@@ -50,7 +50,7 @@ export type CampoFormatado = { campo: string; formato?: Formato };
 /** Espessura das linhas de uma camada do mapa: por degraus de valor, ou por classe (na ordem das classes). */
 export type Espessura = { passo: number } | { classe: string; classes: string[] };
 export type Bloco =
-  | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado; leitura: string }
+  | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado; leitura: string; centralizar?: true }
   | {
       tipo: 'indicadores';
       analise: string;
@@ -93,7 +93,7 @@ export type Bloco =
       top?: number;
     }
   | { tipo: 'destaque'; conclusao: string }
-  | { tipo: 'nota'; leitura?: string; ressalvas?: string[] }
+  | { tipo: 'nota'; leitura?: string; ressalvas?: string[]; marcadores?: true }
   | { tipo: 'grupo'; colunas: 2 | 3; blocos: Bloco[] }
   | {
       tipo: 'mapa_roscas';
