@@ -227,20 +227,6 @@
             {
               "tabela": "instalacao_distribuicao",
               "filtro": {
-                "dimensao": "Classificação"
-              },
-              "categoria": {
-                "campo": "categoria"
-              },
-              "valor": {
-                "campo": "extensao_km",
-                "formato": "decimal"
-              },
-              "top": 5
-            },
-            {
-              "tabela": "instalacao_distribuicao",
-              "filtro": {
                 "dimensao": "Velocidade"
               },
               "categoria": {
@@ -292,6 +278,27 @@
             "campo": "ocupacao_maxima_pct",
             "acima_de": 100
           },
+          "selecao": "id_porto"
+        },
+        {
+          "tipo": "distribuicoes",
+          "analise": "indicadores-instalacao",
+          "cartoes": [
+            {
+              "tabela": "instalacao_distribuicao",
+              "filtro": {
+                "dimensao": "Classificação"
+              },
+              "categoria": {
+                "campo": "categoria"
+              },
+              "valor": {
+                "campo": "extensao_km",
+                "formato": "decimal"
+              },
+              "top": 5
+            }
+          ],
           "selecao": "id_porto"
         }
       ]

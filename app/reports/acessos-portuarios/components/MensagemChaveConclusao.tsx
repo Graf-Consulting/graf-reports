@@ -8,5 +8,10 @@ type Props = PropsProprio & { campo?: string };
 export function MensagemChaveConclusao({ tabelas, textos, campo = '' }: Props) {
   const { campos, linhas } = Object.values(tabelas)[0];
   const [conclusao] = Object.values(textos.conclusoes);
-  return <KeyMessage value={comUnidade(inteiro(Number(linhas[0][campo])), campos[campo]?.unidade)}>{conclusao.destacado}</KeyMessage>;
+  // O KeyMessage do kit não tem opção de centralizar; o wrapper alinha o texto à altura do número sem mexer no kit.
+  return (
+    <div className="[&_.grid]:items-center">
+      <KeyMessage value={comUnidade(inteiro(Number(linhas[0][campo])), campos[campo]?.unidade)}>{conclusao.destacado}</KeyMessage>
+    </div>
+  );
 }
