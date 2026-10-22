@@ -152,7 +152,7 @@ secoes:
     titulo: Ressalvas da leitura
     ressalvas: [ocupacao-so-com-vmda, ocupacao-bidirecional, links-compartilhados, vmda-estimativa, raio-em-linha-reta]
 visual:
-  mensagem_chave: "Número grande com a extensão com ocupação de 70% ou mais, em km, seguido da conclusão; os valores dos marcadores em destaque."
+  mensagem_chave: "Número grande com a extensão com ocupação de 70% ou mais, em km, seguido da conclusão, com o texto centralizado na altura do número; os valores dos marcadores em destaque."
   resumo_base: Quatro cartões de indicadores lado a lado, abaixo dos tópicos de "Sobre esta análise".
   comparativo: "Mapa do Brasil com uma rosca por instalação portuária e, ao lado, lista com barras empilhadas por faixa de ocupação."
   faixas_de_ocupacao: "Seis faixas em escala sequencial, do verde (0% a 20%) ao vermelho (acima de 100%), com a mesma cor no comparativo e nos indicadores da seleção."
