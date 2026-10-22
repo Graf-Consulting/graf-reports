@@ -107,7 +107,12 @@ jobs:
 
       - run: npm ci
 
+      - name: Guardar o commit inicial
+        id: antes
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Rodar as skills da esteira
+        id: agente
         uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ github.token }}
@@ -137,3 +142,22 @@ jobs:
           claude_args: >-
             --allowedTools
             "Read,Write,Edit,Glob,Grep,Bash(npm run validar:*),Bash(npm run lint),Bash(npx tsc --noEmit),Bash(npm run build),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh pr edit:*)"
+
+      # Roda mesmo se o agente falhar, para o custo de toda execução ficar registrado no PR.
+      - name: Registrar o custo da geração
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARQUIVO: ${{ steps.agente.outputs.execution_file }}
+          PR_COMENTARIO: ${{ needs.detectar.outputs.pr }}
+          BRANCH: ${{ needs.detectar.outputs.branch }}
+          ANTES: ${{ steps.antes.outputs.sha }}
+          SLUGS: ${{ needs.detectar.outputs.slugs }}
+          EVENTO: ${{ github.event_name }}
+        run: |
+          # Gerou se o agente fez push de algum commit na branch do PR.
+          DEPOIS=$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)
+          if [ -n "$DEPOIS" ] && [ "$DEPOIS" != "$ANTES" ]; then RESULTADO="gerou commit ${DEPOIS:0:7}"; else RESULTADO="sem commit"; fi
+          GATILHO=$([ "$EVENTO" = "workflow_dispatch" ] && echo "disparo manual" || echo "push no PR")
+          export RESULTADO ROTULO="Geração de $SLUGS ($GATILHO)"
+          bash .github/scripts/custo-do-agente.sh
