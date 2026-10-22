@@ -226,4 +226,4 @@ Ligado à seleção do mapa. As distribuições ficam em grade de cartões, e a 
 Componente `CadastroInstalacao`, ligado à seleção do mapa.
 
 ## como-interpretar
-Nota final com as cinco ressalvas da metodologia, em lista.
+Nota final com as cinco ressalvas da metodologia, em lista com marcadores.
