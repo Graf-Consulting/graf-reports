@@ -7,3 +7,4 @@ export { default as ChartCard } from './ChartCard';
 export { default as Callout, Emphasis } from './Callout';
 export { default as MethodNote } from './MethodNote';
 export { ToggleButton, SelectControl } from './Controls';
+export { SelecaoProvider, useSelecao, irParaSelecao } from './Selecao';

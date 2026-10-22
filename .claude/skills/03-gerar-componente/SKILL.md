@@ -57,7 +57,7 @@ O renderizador passa a cada componente próprio as props do tipo `PropsProprio` 
 |---|---|---|
 | `linhas` | `tabela` do bloco | As linhas da tabela, como estão no `data.json` |
 | `tabelas` | `tabelas` do bloco | Cada tabela citada, pelo nome técnico, com campos e linhas |
-| `textos.leituras`, `textos.conclusoes`, `textos.ressalvas` | `leituras`, `conclusoes`, `ressalvas` do bloco | Por id, `{ conteudo, texto }`: `conteudo` já tem os marcadores preenchidos e o negrito aplicado; `texto` é a versão em texto simples |
+| `textos.leituras`, `textos.conclusoes`, `textos.ressalvas` | `leituras`, `conclusoes`, `ressalvas` do bloco | Por id, `{ conteudo, destacado, texto }`: `conteudo` já tem os marcadores preenchidos e o negrito aplicado; `destacado` também põe em negrito os valores dos marcadores (use quando o guideline pede os valores em destaque); `texto` é a versão em texto simples |
 | `rotulos` | `rotulos` do guideline | Os textos de interface do estudo |
 | `analise` | `analise` do bloco | Título e descrição da análise na metodologia |
 | `secao` | seção do guideline, só com `cabecalho: true` | Sobretítulo, título e introdução, para o componente desenhar o próprio cabeçalho |
@@ -65,6 +65,7 @@ O renderizador passa a cada componente próprio as props do tipo `PropsProprio` 
 Regras:
 
 - O componente não calcula sobre os dados nem redige texto. Filtrar e ordenar linhas para exibir é permitido; derivar números novos, não.
+- Textos também não vão em `props` na composição: lá só cabem nomes técnicos e parâmetros (minúsculas, números, `_`, `-` e `.`), e o `npm run validar` reprova o resto. Um título que o componente precisa exibir vem de `rotulos`, de uma leitura da metodologia ou do cabeçalho da seção.
 - Leituras, conclusões e ressalvas passadas ao componente precisam estar citadas na seção do guideline ou ligadas à mesma análise do bloco na metodologia. O `npm run validar` confere isso.
 - Use `cabecalho: true` só quando o bloco é o único da seção e o cabeçalho depende do estado do componente, como o nome da instalação selecionada. A seção, então, não ganha a moldura padrão.
 
@@ -81,9 +82,25 @@ export const proprios = { MeuGrafico };
 - Cada componente fica num arquivo `'use client'` e é exportado por nome. Não exporte fábricas de componentes de um módulo cliente: o servidor não consegue chamá-las.
 - A chave do mapa é o `nome` do bloco `proprio` na composição.
 
+### Seleção compartilhada com o kit
+
+Os blocos do kit que publicam uma seleção (por exemplo `mapa_roscas` e `mapa_trechos` com `"selecao": "id_porto"`) e os componentes próprios usam a mesma seleção da página (ADR-007). Num componente próprio, leia e troque o valor com o hook do kit:
+
+```ts
+import { useSelecao } from '@/components/report';
+
+const [idPorto, selecionar] = useSelecao('id_porto');
+```
+
+Não crie provedor próprio para uma seleção: use a do kit, que já envolve a página.
+
+### Mapas
+
+Use os blocos `mapa_roscas` e `mapa_trechos` do kit. Se nenhum atender, o componente próprio de mapa é montado sobre o `MapaBase` de `@/components/maps` (Leaflet com o fundo do CARTO), com camadas que usam `useMapa()`. Nunca escreva a chave do CARTO no código.
+
 ### Estado compartilhado
 
-Quando vários componentes próprios do estudo dividem um estado, como a instalação selecionada num mapa e mostrada nos indicadores, crie um provedor de contexto num arquivo `'use client'` e exporte-o também no registro:
+Quando vários componentes próprios do estudo dividem um estado que não é uma seleção do kit, crie um provedor de contexto num arquivo `'use client'` e exporte-o também no registro:
 
 ```ts
 export { Provedor } from './Selecao';

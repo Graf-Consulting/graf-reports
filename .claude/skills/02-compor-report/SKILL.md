@@ -59,7 +59,7 @@ Para a mesma entrada gerar sempre o mesmo arquivo (RNF-04; backlog V8). O `npm r
 
 | Regra | Como escrever |
 |---|---|
-| Formato de exibição | Omita `formato` quando o valor é exibido como está. Declare só `compact`, `fob` ou `cleanLabel`. |
+| Formato de exibição | Omita `formato` quando o valor é exibido como está. Declare só `compact`, `inteiro`, `fob` ou `cleanLabel`. Use `inteiro` para contagens e medidas exibidas por inteiro, com separador de milhar (ex.: 24.651 km). |
 | Top N | Sempre declare `top` em `ranking`, `serie_empilhada` e `fluxo`, mesmo quando igual ao padrão do kit (10, 10 e 100). |
 | Unidade nos cartões de `indicadores` | Declare `"mostrar_unidade": true` quando o formato for `compact` e o campo tiver `unidade` no `data.json` (ex.: `271,3 mi kg`). Nos demais casos, não declare: `fob` já mostra `US$`, e valores de texto não têm unidade. |
 | Chave `$schema` | Não use. |

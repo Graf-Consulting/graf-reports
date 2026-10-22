@@ -53,7 +53,7 @@ components/maps/
 **4. Seleção compartilhada no kit.** No estudo, escolher uma instalação portuária no comparativo abre o mapa interativo e atualiza os indicadores e o cadastro. Hoje isso só existe entre componentes próprios, pelo provedor do estudo. Passa a existir uma seleção do kit, oferecida pelo renderizador a toda a página:
 - um bloco declara na composição o campo que publica ou lê, por exemplo `"selecao": "id_porto"`;
 - quem publica define o valor ao clicar; quem lê filtra as linhas por ele;
-- componentes próprios recebem a seleção pelas props (`selecao` e `selecionar`), sem precisar de provedor próprio para isso.
+- componentes próprios leem e trocam a seleção com o hook `useSelecao(campo)`, de `@/components/report`, sem precisar de provedor próprio para isso. (O renderizador roda no servidor e não consegue passar estado do navegador por props.)
 
 O provedor do estudo continua opcional, para estados que não são seleção.
 

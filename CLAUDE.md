@@ -24,6 +24,7 @@ Para conferir um estudo localmente, use `npm run dev` e acesse `/reports/<slug>`
 - Next.js 16 (App Router), React 19, TypeScript e Tailwind 4.
 - O `next.config.ts` usa `output: 'export'`. Nada pode depender de servidor em produção: não use rotas de API, server actions, cookies, headers, `revalidate` nem renderização dinâmica.
 - O Plotly 2.35.2 é carregado por CDN em runtime (`components/charts/plotly.ts`) e não é dependência npm. Não o adicione ao `package.json` sem decisão registrada.
+- O Leaflet 1.9.4 também é carregado por CDN, com SRI (`components/maps/leaflet.ts`), só nas páginas com mapa (ADR-007). O fundo de ruas do CARTO usa a chave `NEXT_PUBLIC_CARTO_API_KEY`, definida na Vercel (Production e Preview) e, localmente, num `.env.local`. A chave nunca vai para o repositório nem para as entradas do estudo. Sem ela, os mapas aparecem sem o fundo de ruas e o build não falha.
 - Use o alias `@/*` a partir da raiz do repo.
 - A fonte é Montserrat, carregada em `app/layout.tsx`.
 
@@ -40,11 +41,12 @@ components/
                              MetricCards, ChartCard, Callout, MethodNote, Controls)
   charts/                    gráficos do kit sobre PlotlyChart (RankingChart,
                              StackedAreaChart, SankeyChart)
+  maps/                      mapas do kit sobre o MapaBase (Leaflet + CARTO): MapaRoscas e MapaTrechos
 lib/report/
-  tokens.ts                  paleta GRAF (COLORS, ACCENT_SEQUENCE, AREA_PALETTE, paletas do Sankey, CSS_VARS)
+  tokens.ts                  paleta GRAF (COLORS, ACCENT_SEQUENCE, AREA_PALETTE, BAND_PALETTE, MAP_LAYER_PALETTE, paletas do Sankey, CSS_VARS)
   renderizador/              Renderizador (composição + entradas → página), blocos interativos,
                              preenchimento de marcadores e leitura dos cabeçalhos YAML no build
-  format.ts                  formatadores (compact, fob) e limpeza de rótulos (cleanLabel)
+  format.ts                  formatadores (compact, inteiro, decimal, fob) e limpeza de rótulos (cleanLabel)
   schemas/                   JSON Schema (draft-07) do data.json, dos cabeçalhos do guideline.md e da
                              metodologia.md e da composição; o schema da composição é o catálogo de blocos do kit
 docs/                        documentação (índice em docs/README.md); ADRs em docs/adr/
