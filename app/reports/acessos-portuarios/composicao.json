@@ -177,20 +177,35 @@
       "id": "indicadores-da-selecao",
       "blocos": [
         {
-          "tipo": "proprio",
-          "nome": "IndicadoresInstalacao",
+          "tipo": "indicadores",
           "analise": "indicadores-instalacao",
-          "tabelas": [
-            "instalacoes"
+          "tabela": "instalacoes",
+          "itens": [
+            {
+              "campo": "extensao_total_km",
+              "formato": "decimal",
+              "mostrar_unidade": true,
+              "complemento": {
+                "campo": "links",
+                "formato": "inteiro"
+              }
+            },
+            {
+              "campo": "extensao_70_km",
+              "formato": "decimal",
+              "mostrar_unidade": true,
+              "complemento": {
+                "campo": "participacao_70_pct",
+                "formato": "decimal"
+              }
+            },
+            {
+              "campo": "extensao_sem_vmda_km",
+              "formato": "decimal",
+              "mostrar_unidade": true
+            }
           ],
-          "leituras": [
-            "detalhe-extensao-instalacao",
-            "detalhe-70-instalacao",
-            "detalhe-sem-vmda-instalacao"
-          ],
-          "props": {
-            "selecao": "id_porto"
-          }
+          "selecao": "id_porto"
         },
         {
           "tipo": "distribuicoes",
