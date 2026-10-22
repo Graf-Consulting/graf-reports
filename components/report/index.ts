@@ -8,3 +8,7 @@ export { default as Callout, Emphasis } from './Callout';
 export { default as MethodNote } from './MethodNote';
 export { ToggleButton, SelectControl } from './Controls';
 export { SelecaoProvider, useSelecao, irParaSelecao } from './Selecao';
+export { default as IndicadoresSelecao } from './IndicadoresSelecao';
+export { default as Distribuicoes, type CartaoDistribuicao, type LinhaDistribuicao } from './Distribuicoes';
+export { default as TabelaDados } from './TabelaDados';
+export { default as Ficha } from './Ficha';

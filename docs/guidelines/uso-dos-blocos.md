@@ -16,6 +16,10 @@ O bloco sai da pergunta que a análise responde, e não do formato dos dados.
 | Como a composição de um total muda no tempo | `serie_empilhada` | Os valores não puderem ser somados (preços, taxas, médias, percentuais); o kit ainda não tem gráfico de linhas, então isso pede um componente próprio |
 | Onde ficam os pontos e como o total de cada um se divide em faixas | `mapa_roscas` | Os pontos não tiverem localização (`geo_ponto`) ou as faixas não somarem o total do ponto |
 | Os traçados ligados a um ponto escolhido pelo leitor, com camadas de valores | `mapa_trechos` | Não houver traçado (`geo_linhas`); aí, um ranking dos trechos |
+| Os números do item escolhido pelo leitor (no mapa ou num seletor) | `indicadores` com `selecao` | Nada na página publicar uma seleção |
+| Como um valor se distribui por categoria, em vários recortes lado a lado | `distribuicoes` | Houver um recorte só e ele for o foco da seção; aí use `ranking` |
+| Uma lista com várias colunas para consulta, com valores acima de um limite em destaque | `tabela` | A pergunta for quem é maior; aí use `ranking` |
+| Os atributos cadastrais do item escolhido pelo leitor | `ficha` | Os atributos não dependerem de uma escolha; aí use texto no guideline ou `tabela` |
 | Para onde o volume vai, de uma etapa para outra | `fluxo` | Houver mais de 3 etapas ou dezenas de categorias por etapa |
 | A conclusão principal de uma seção | `destaque` | O texto for contexto ou leitura, e não conclusão; aí use uma leitura na introdução |
 | Como interpretar os resultados e seus limites | `nota` | — |
@@ -32,6 +36,8 @@ O bloco sai da pergunta que a análise responde, e não do formato dos dados.
 | `serie_empilhada` | Padrão de 10 séries; até 10 | Acima disso, as cores deixam de se distinguir; a paleta tem 12 |
 | `mapa_roscas` | Até 6 faixas na escala sequencial; acima disso, cores categóricas | A escala sequencial de `BAND_PALETTE` tem 6 cores |
 | `mapa_trechos` | Até 5 camadas | Mais camadas sobrepostas deixam de se distinguir |
+| `distribuicoes` | Até 6 cartões; top de 5 a 6 por cartão | Mais cartões viram uma parede de barras; mais itens deixam as barras finas |
+| `tabela` | Até 5 colunas; rola dentro do cartão quando é longa | Mais colunas não cabem no celular |
 | `fluxo` | Até 3 camadas; padrão de 100 caminhos; até cerca de 20 categorias por camada | Acima disso, os nós ficam ilegíveis |
 | `destaque` | Um por seção | Vários destaques deixam de destacar |
 | `grupo` | 2 colunas; 3 só para blocos compactos, como rankings curtos | Em 3 colunas, gráficos largos ficam apertados |

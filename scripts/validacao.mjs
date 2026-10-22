@@ -15,7 +15,7 @@ const schemas = Object.fromEntries(
 );
 
 /** Tipos de campo aceitos por cada formato; null aceita qualquer tipo. */
-const FORMATO_TIPO = { texto: null, fob: ['numero'], compact: ['numero'], inteiro: ['numero'], cleanLabel: ['texto'] };
+const FORMATO_TIPO = { texto: null, fob: ['numero'], compact: ['numero'], inteiro: ['numero'], decimal: ['numero'], cleanLabel: ['texto'] };
 
 /** Formato do valor de cada tipo de campo do data.json. */
 const VALOR_DO_TIPO = {
@@ -261,13 +261,15 @@ export function validarComposicao(texto, { D, G, M }) {
     const aceitos = formato && FORMATO_TIPO[formato];
     if (aceitos && !aceitos.includes(def.tipo)) e(local, `formato "${formato}" incompatível com o tipo ${def.tipo} de "${nome}"`);
   };
-  // Unidade junto do valor: só e sempre com formato compact e campo com unidade (fob já mostra US$).
+  // Unidade junto do valor: só e sempre com formato numérico (compact, inteiro, decimal) e campo com unidade (fob já mostra US$).
   const regraUnidade = (local, tabela, item, papel) => {
     const unidade = T[tabela]?.campos[item.campo]?.unidade;
-    const deve = item.formato === 'compact' && Boolean(unidade);
-    if (deve && !item.mostrar_unidade) e(local, `${papel} "${item.campo}" usa compact e tem unidade "${unidade}": declare "mostrar_unidade": true`);
-    if (!deve && item.mostrar_unidade) e(local, `${papel} "${item.campo}" não deve ter "mostrar_unidade": só vale para formato compact com unidade`);
+    const deve = ['compact', 'inteiro', 'decimal'].includes(item.formato) && Boolean(unidade);
+    if (deve && !item.mostrar_unidade) e(local, `${papel} "${item.campo}" usa ${item.formato} e tem unidade "${unidade}": declare "mostrar_unidade": true`);
+    if (!deve && item.mostrar_unidade) e(local, `${papel} "${item.campo}" não deve ter "mostrar_unidade": só vale para formato compact, inteiro ou decimal com unidade`);
   };
+  // Campo da seleção compartilhada existe na tabela do bloco.
+  const selecao = (local, tabela, b) => { if (b.selecao && T[tabela] && !T[tabela].campos[b.selecao]) e(local, `campo da seleção "${b.selecao}" não existe em "${tabela}"`); };
   const rotulo = (local, nome, papel) => { if (!G.rotulos?.[nome]) e(local, `${papel} "${nome}" sem nome em rotulos no guideline`); };
   // Campo com o tipo que o bloco exige (ex.: geo_ponto no ponto de um mapa).
   const tipo = (local, tabela, nome, esperado) => {
@@ -302,7 +304,11 @@ export function validarComposicao(texto, { D, G, M }) {
           campo(local, b.tabela, it.campo, b.analise, it.formato);
           rotulo(local, it.campo, 'indicador');
           regraUnidade(local, b.tabela, it, 'indicador');
+          if (it.complemento) campo(local, b.tabela, it.complemento.campo, b.analise, it.complemento.formato);
         });
+        selecao(local, b.tabela, b);
+        if (!b.selecao && T[b.tabela] && T[b.tabela].linhas.length !== 1)
+          e(local, `tabela "${b.tabela}" tem ${T[b.tabela].linhas.length} linhas; sem "selecao", os indicadores vêm de uma tabela de uma linha`);
         const ind = (sg.analises ?? []).find((a) => a.id === b.analise)?.indicadores ?? [];
         const esperado = ind.map((i) => i.campo).join(', '), atual = b.itens.map((i) => i.campo).join(', ');
         if (esperado !== atual) e(local, `itens (${atual}) diferentes dos indicadores do guideline (${esperado})`);
@@ -357,6 +363,35 @@ export function validarComposicao(texto, { D, G, M }) {
         }
         if (b.cabecalho && s.blocos.length !== 1) e(local, '"cabecalho": true só vale quando o componente próprio é o único bloco da seção');
         if (b.props) textoEmProps(local, b.props);
+        break;
+      case 'distribuicoes':
+        for (const c of b.cartoes) {
+          campo(local, c.tabela, c.categoria.campo, b.analise, c.categoria.formato);
+          campo(local, c.tabela, c.valor.campo, b.analise, c.valor.formato);
+          tipo(local, c.tabela, c.valor.campo, 'numero');
+          if (c.ordem) { campo(local, c.tabela, c.ordem, b.analise); tipo(local, c.tabela, c.ordem, 'numero'); }
+          for (const [k, v] of Object.entries(c.filtro ?? {})) {
+            campo(local, c.tabela, k, b.analise);
+            if (T[c.tabela] && !T[c.tabela].linhas.some((l) => l[k] === v)) e(local, `filtro ${JSON.stringify(v)} não existe em "${c.tabela}.${k}"`);
+          }
+          if (!c.filtro) rotulo(local, c.categoria.campo, 'categoria');
+          selecao(local, c.tabela, b);
+        }
+        break;
+      case 'tabela':
+        b.colunas.forEach((c) => { campo(local, b.tabela, c.campo, b.analise, c.formato); rotulo(local, c.campo, 'coluna'); });
+        campo(local, b.tabela, b.ordem.campo, b.analise);
+        if (b.destaque) {
+          tipo(local, b.tabela, b.destaque.campo, 'numero');
+          if (!b.colunas.some((c) => c.campo === b.destaque.campo)) e(local, `destaque em "${b.destaque.campo}", que não é uma das colunas`);
+        }
+        selecao(local, b.tabela, b);
+        break;
+      case 'ficha':
+        campo(local, b.tabela, b.nome.campo, b.analise, b.nome.formato);
+        b.campos.forEach((c) => { campo(local, b.tabela, c, b.analise); rotulo(local, c, 'atributo'); });
+        selecao(local, b.tabela, b);
+        if (b.cabecalho && s.blocos.length !== 1) e(local, '"cabecalho": true só vale quando a ficha é o único bloco da seção');
         break;
       case 'mapa_roscas': {
         const f = b.fatias;

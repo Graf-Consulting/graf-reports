@@ -30,7 +30,7 @@
     },
     "formato": {
       "description": "Formatador de lib/report/format.ts. Omita o campo para exibir o valor como está.",
-      "enum": ["compact", "inteiro", "fob", "cleanLabel"]
+      "enum": ["compact", "inteiro", "decimal", "fob", "cleanLabel"]
     },
     "campoFormatado": {
       "description": "Um campo do data.json, com formato opcional de exibição.",
@@ -69,7 +69,7 @@
       "required": ["tipo"],
       "properties": {
         "tipo": {
-          "enum": ["mensagem_chave", "indicadores", "ranking", "serie_empilhada", "fluxo", "destaque", "nota", "grupo", "mapa_roscas", "mapa_trechos", "proprio"]
+          "enum": ["mensagem_chave", "indicadores", "ranking", "serie_empilhada", "fluxo", "destaque", "nota", "grupo", "mapa_roscas", "mapa_trechos", "distribuicoes", "tabela", "ficha", "proprio"]
         }
       },
       "allOf": [
@@ -83,6 +83,9 @@
         { "if": { "properties": { "tipo": { "const": "grupo" } } }, "then": { "$ref": "#/definitions/grupo" } },
         { "if": { "properties": { "tipo": { "const": "mapa_roscas" } } }, "then": { "$ref": "#/definitions/mapa_roscas" } },
         { "if": { "properties": { "tipo": { "const": "mapa_trechos" } } }, "then": { "$ref": "#/definitions/mapa_trechos" } },
+        { "if": { "properties": { "tipo": { "const": "distribuicoes" } } }, "then": { "$ref": "#/definitions/distribuicoes" } },
+        { "if": { "properties": { "tipo": { "const": "tabela" } } }, "then": { "$ref": "#/definitions/tabela" } },
+        { "if": { "properties": { "tipo": { "const": "ficha" } } }, "then": { "$ref": "#/definitions/ficha" } },
         { "if": { "properties": { "tipo": { "const": "proprio" } } }, "then": { "$ref": "#/definitions/proprio" } }
       ]
     },
@@ -113,7 +116,7 @@
         "tipo": { "const": "indicadores" },
         "analise": { "$ref": "#/definitions/idKebab" },
         "tabela": {
-          "description": "Tabela de uma linha com os valores dos indicadores.",
+          "description": "Tabela de uma linha com os valores dos indicadores. Com selecao, uma linha por id, e os cartões mostram a linha escolhida.",
           "$ref": "#/definitions/nomeTecnico"
         },
         "itens": {
@@ -128,12 +131,17 @@
               "campo": { "$ref": "#/definitions/nomeTecnico" },
               "formato": { "$ref": "#/definitions/formato" },
               "mostrar_unidade": {
-                "description": "true acrescenta a unidade do campo depois do valor (ex.: 271,3 mi kg). Regra: true quando o formato é compact e o campo tem unidade no data.json; ausente nos demais casos (fob já mostra US$; texto não tem unidade).",
+                "description": "true acrescenta a unidade do campo depois do valor (ex.: 271,3 mi kg). Regra: true quando o formato é compact, inteiro ou decimal e o campo tem unidade no data.json; ausente nos demais casos (fob já mostra US$; texto não tem unidade).",
                 "const": true
+              },
+              "complemento": {
+                "description": "Opcional. Valor de outro campo exibido antes do detalhe do cartão, com a unidade do campo (ex.: 132 links).",
+                "$ref": "#/definitions/campoFormatado"
               }
             }
           }
-        }
+        },
+        "selecao": { "$ref": "#/definitions/selecao" }
       }
     },
 
@@ -291,8 +299,93 @@
     },
 
     "selecao": {
-      "description": "Opcional. Campo da seleção compartilhada da página (ADR-007), igual ao campo id do bloco: o bloco publica o id escolhido, e outros blocos e componentes próprios leem pelo mesmo campo (useSelecao).",
+      "description": "Opcional. Campo da seleção compartilhada da página (ADR-007). Nos mapas, é o campo id do bloco: o bloco publica o id escolhido. Nos demais blocos, o campo da tabela que liga cada linha ao id: o bloco mostra só as linhas do id escolhido. Componentes próprios leem pelo mesmo campo (useSelecao).",
       "$ref": "#/definitions/nomeTecnico"
+    },
+
+    "distribuicoes": {
+      "description": "Catálogo · Distribuicoes. Grade de cartões, cada um com barras horizontais de um valor por categoria. O título do cartão é o valor do filtro (ex.: Superfície) ou, sem filtro, o rótulo do campo de categoria. Com ordem, as categorias são faixas, ficam nessa ordem e ganham as cores da escala sequencial; sem ordem, vêm do maior para o menor.",
+      "type": "object",
+      "required": ["tipo", "analise", "cartoes"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "distribuicoes" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "cartoes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["tabela", "categoria", "valor", "top"],
+            "additionalProperties": false,
+            "properties": {
+              "tabela": { "$ref": "#/definitions/nomeTecnico" },
+              "filtro": {
+                "description": "Opcional. Um campo e o valor que selecionam as linhas do cartão (ex.: { \"dimensao\": \"Superfície\" }).",
+                "type": "object",
+                "minProperties": 1,
+                "maxProperties": 1,
+                "propertyNames": { "$ref": "#/definitions/nomeTecnico" },
+                "additionalProperties": { "type": "string" }
+              },
+              "categoria": { "$ref": "#/definitions/campoFormatado" },
+              "valor": { "$ref": "#/definitions/campoFormatado" },
+              "ordem": { "description": "Opcional. Campo numérico com a ordem das faixas.", "$ref": "#/definitions/nomeTecnico" },
+              "top": { "$ref": "#/definitions/top" }
+            }
+          }
+        },
+        "selecao": { "$ref": "#/definitions/selecao" }
+      }
+    },
+
+    "tabela": {
+      "description": "Catálogo · TabelaDados. Tabela com as colunas declaradas, ordenada por um campo, com rolagem interna quando é longa. Título e descrição vêm da análise na seção do guideline; cabeçalhos das colunas, de rotulos.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "colunas", "ordem"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "tabela" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "colunas": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/campoFormatado" } },
+        "ordem": {
+          "type": "object",
+          "required": ["campo", "direcao"],
+          "additionalProperties": false,
+          "properties": {
+            "campo": { "$ref": "#/definitions/nomeTecnico" },
+            "direcao": { "enum": ["asc", "desc"] }
+          }
+        },
+        "destaque": {
+          "description": "Opcional. Destaca as células de uma coluna numérica acima de um limite (ex.: ocupação acima de 100).",
+          "type": "object",
+          "required": ["campo", "acima_de"],
+          "additionalProperties": false,
+          "properties": {
+            "campo": { "$ref": "#/definitions/nomeTecnico" },
+            "acima_de": { "type": "number" }
+          }
+        },
+        "selecao": { "$ref": "#/definitions/selecao" }
+      }
+    },
+
+    "ficha": {
+      "description": "Catálogo · Ficha. Atributos da linha escolhida na seleção da página, em duas colunas (rótulo e valor), na ordem dos campos. Com cabecalho, desenha o cabeçalho da seção e acrescenta o nome escolhido ao título; só vale quando é o único bloco da seção.",
+      "type": "object",
+      "required": ["tipo", "analise", "tabela", "nome", "campos", "selecao"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "const": "ficha" },
+        "analise": { "$ref": "#/definitions/idKebab" },
+        "tabela": { "$ref": "#/definitions/nomeTecnico" },
+        "nome": { "description": "Campo com o nome exibido no título.", "$ref": "#/definitions/campoFormatado" },
+        "campos": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/nomeTecnico" } },
+        "selecao": { "description": "Campo da seleção compartilhada que escolhe a linha.", "$ref": "#/definitions/nomeTecnico" },
+        "cabecalho": { "const": true }
+      }
     },
 
     "mapa_roscas": {

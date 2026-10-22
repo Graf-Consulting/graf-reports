@@ -1,10 +1,11 @@
-import { cleanLabel, compact, fob, inteiro } from '../format';
+import { cleanLabel, compact, decimal, fob, inteiro } from '../format';
 import type { Dados, Formato, Linha, Texto, ValorRef } from './tipos';
 
 /** Exibe um valor no formato declarado na composição ou na metodologia. */
 export function formatar(valor: unknown, formato: Formato = 'texto'): string {
   if (formato === 'compact') return compact(Number(valor));
   if (formato === 'inteiro') return inteiro(Number(valor));
+  if (formato === 'decimal') return decimal(Number(valor), 1);
   if (formato === 'fob') return fob(Number(valor));
   if (formato === 'cleanLabel') return cleanLabel(String(valor ?? ''));
   return String(valor ?? '');

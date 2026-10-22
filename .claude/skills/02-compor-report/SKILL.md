@@ -49,6 +49,7 @@ A composição não traz textos nem estilo (ADR-004). Topo, títulos, introduç�
 5. **Componentes próprios.** Reserve o bloco na composição e deixe a criação do código para `03-gerar-componente` quando:
    - o guideline declarar o componente em `componentes_novos`; ou
    - o guideline pedir algo que nenhum componente do kit cobre.
+   Quando o guideline pede que uma seção acompanhe o item escolhido pelo leitor (por exemplo, a instalação selecionada no mapa), use a seleção do kit: `"selecao": "<campo id>"` no bloco que publica (`mapa_roscas`, `mapa_trechos`) e nos que leem (`indicadores`, `distribuicoes`, `tabela`, `ficha`). Componentes próprios leem com `useSelecao`.
    Falta de bloco no kit não é motivo para parar a geração: reserve o bloco `proprio`, com as tabelas e os textos que ele exibe, e siga para `03-gerar-componente`. Pare só se faltar algo nas entradas.
 6. **Validação.** Rode `npm run validar -- <slug>` e corrija a composição até ela passar. O script valida o `composicao.json` contra `lib/report/schemas/composicao.schema.json` (tipos de bloco e campos de cada um) e contra as entradas (RF-06): seções iguais às do guideline e na mesma ordem; tabelas e campos existentes e usados pela análise do bloco; formato compatível com o tipo do campo; opções de filtro existentes nos dados; leituras, conclusões e ressalvas citadas na seção; tudo o que o guideline cita exibido; toda ressalva no report.
 7. **Proteção de ajustes manuais.** Se `app/reports/<slug>/composicao.json` já existir, compare com a nova versão. Liste o que mudou e sinalize qualquer diferença que não venha de mudança nas entradas. Uma diferença assim pode ser ajuste manual do desenvolvedor e não pode ser descartada sem aviso (RF-16).
@@ -59,9 +60,9 @@ Para a mesma entrada gerar sempre o mesmo arquivo (RNF-04; backlog V8). O `npm r
 
 | Regra | Como escrever |
 |---|---|
-| Formato de exibição | Omita `formato` quando o valor é exibido como está. Declare só `compact`, `inteiro`, `fob` ou `cleanLabel`. Use `inteiro` para contagens e medidas exibidas por inteiro, com separador de milhar (ex.: 24.651 km). |
+| Formato de exibição | Omita `formato` quando o valor é exibido como está. Declare só `compact`, `inteiro`, `decimal`, `fob` ou `cleanLabel`. Use `inteiro` para contagens e medidas exibidas por inteiro, com separador de milhar (ex.: 24.651 km), e `decimal` para uma casa decimal (ex.: 871,1 km). |
 | Top N | Sempre declare `top` em `ranking`, `serie_empilhada` e `fluxo`, mesmo quando igual ao padrão do kit (10, 10 e 100). |
-| Unidade nos cartões de `indicadores` | Declare `"mostrar_unidade": true` quando o formato for `compact` e o campo tiver `unidade` no `data.json` (ex.: `271,3 mi kg`). Nos demais casos, não declare: `fob` já mostra `US$`, e valores de texto não têm unidade. |
+| Unidade nos cartões de `indicadores` | Declare `"mostrar_unidade": true` quando o formato for `compact`, `inteiro` ou `decimal` e o campo tiver `unidade` no `data.json` (ex.: `271,3 mi kg`, `24.651 km`). Nos demais casos, não declare: `fob` já mostra `US$`, e valores de texto não têm unidade. |
 | Chave `$schema` | Não use. |
 | Formatação do arquivo | Indentação de 2 espaços, um item por linha e quebra de linha no fim: a saída de `JSON.stringify(composicao, null, 2)`. |
 

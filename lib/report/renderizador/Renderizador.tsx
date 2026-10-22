@@ -2,12 +2,27 @@ import type { ComponentType, ReactNode } from 'react';
 import { RankingChart } from '@/components/charts';
 import { Footer } from '@/components/layout';
 import { MapaRoscas, MapaTrechos } from '@/components/maps';
-import { Callout, ChartCard, Emphasis, Hero, KeyMessage, MethodNote, MetricCards, ReportSection, SelecaoProvider } from '@/components/report';
+import {
+  Callout,
+  ChartCard,
+  Distribuicoes,
+  Emphasis,
+  Ficha,
+  Hero,
+  IndicadoresSelecao,
+  KeyMessage,
+  MethodNote,
+  MetricCards,
+  ReportSection,
+  SelecaoProvider,
+  TabelaDados,
+} from '@/components/report';
 import { dataCurta } from '../format';
 import { ACCENT_SEQUENCE } from '../tokens';
 import BlocoFluxo from './BlocoFluxo';
 import BlocoSerieEmpilhada from './BlocoSerieEmpilhada';
 import { dadosRoscas, dadosTrechos } from './mapas';
+import { dadosDistribuicoes, dadosFicha, dadosTabela, exibir, valoresIndicadores } from './selecao';
 import { formatar, partes, preencher, tituloEixo, valorHover, valorUnico, type Parte } from './textos';
 import type { Bloco, Composicao, Dados, Formato, Guideline, Linha, Metodologia, PropsProprio, SecaoGuideline, Tabela, Texto, TextoPronto } from './tipos';
 
@@ -87,22 +102,58 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
 
       case 'indicadores': {
         const indicadores = analiseG?.indicadores ?? [];
+        const detalheDe = (campo: string) => {
+          const id = indicadores.find((x) => x.campo === campo)?.detalhe;
+          return id ? leitura(id) : '';
+        };
+        // Com selecao, os cartões mostram a linha escolhida na página (ADR-007).
+        if (b.selecao)
+          return (
+            <IndicadoresSelecao
+              key={chave}
+              selecao={b.selecao}
+              itens={b.itens.map((it, i) => ({ label: rotulo(it.campo), accent: ACCENT_SEQUENCE[i % ACCENT_SEQUENCE.length], detalhe: detalheDe(it.campo) }))}
+              valores={valoresIndicadores({ ...b, selecao: b.selecao }, dados)}
+            />
+          );
         return (
           <MetricCards
             key={chave}
             items={b.itens.map((it, i) => {
               const v = formatar(valorUnico(dados, b.tabela, it.campo, chave), it.formato);
-              const detalhe = indicadores.find((x) => x.campo === it.campo)?.detalhe;
+              const complemento = it.complemento && exibir(tabela(b.tabela), it.complemento, valorUnico(dados, b.tabela, it.complemento.campo, chave));
               return {
                 label: rotulo(it.campo),
                 value: comUnidade(b.tabela, it, v),
-                detail: detalhe ? leitura(detalhe) : '',
+                detail: complemento ? (
+                  <>
+                    {complemento} {detalheDe(it.campo)}
+                  </>
+                ) : (
+                  detalheDe(it.campo)
+                ),
                 accent: ACCENT_SEQUENCE[i % ACCENT_SEQUENCE.length],
               };
             })}
           />
         );
       }
+
+      case 'distribuicoes':
+        return <Distribuicoes key={chave} selecao={b.selecao} cartoes={dadosDistribuicoes(b, dados, rotulo)} />;
+
+      case 'tabela':
+        return <TabelaDados key={chave} titulo={analiseG?.titulo} descricao={analiseG?.descricao} selecao={b.selecao} {...dadosTabela(b, dados, rotulo)} />;
+
+      case 'ficha':
+        return (
+          <Ficha
+            key={chave}
+            selecao={b.selecao}
+            secao={b.cabecalho ? { sobretitulo: sg.sobretitulo, titulo: sg.titulo, intro: sg.intro } : undefined}
+            {...dadosFicha(b, dados, rotulo)}
+          />
+        );
 
       case 'ranking': {
         const cor = ACCENT_SEQUENCE[rankings++ % ACCENT_SEQUENCE.length];
@@ -252,9 +303,9 @@ export default function Renderizador({ composicao, dados, guideline, metodologia
         const sg = guideline.secoes.find((x) => x.id === s.id);
         if (!sg) throw new Error(`seção "${s.id}" não existe no guideline`);
         const blocos = s.blocos.map((b, i) => bloco(b, sg, `${s.id}.${i}`));
-        // A nota e o componente próprio com cabecalho desenham o cabeçalho da seção; seção sem título não ganha moldura.
+        // A nota e os blocos com cabecalho (componente próprio, ficha) desenham o cabeçalho da seção; seção sem título não ganha moldura.
         const unico = s.blocos.length === 1 ? s.blocos[0] : undefined;
-        if (unico?.tipo === 'nota' || (unico?.tipo === 'proprio' && unico.cabecalho)) return blocos[0];
+        if (unico?.tipo === 'nota' || ((unico?.tipo === 'proprio' || unico?.tipo === 'ficha') && unico.cabecalho)) return blocos[0];
         if (!sg.titulo) return <div key={s.id}>{blocos}</div>;
         return (
           <ReportSection key={s.id} eyebrow={sg.sobretitulo ?? ''} title={sg.titulo} intro={sg.intro ?? ''}>

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /** Tipos das entradas do estudo e da composição. Espelham os schemas de lib/report/schemas/. */
 
-export type Formato = 'texto' | 'compact' | 'inteiro' | 'fob' | 'cleanLabel';
+export type Formato = 'texto' | 'compact' | 'inteiro' | 'decimal' | 'fob' | 'cleanLabel';
 export type Linha = Record<string, unknown>;
 
 export type Campo = { tipo: string; descricao: string; unidade?: string; nulo?: boolean };
@@ -51,7 +51,29 @@ export type CampoFormatado = { campo: string; formato?: Formato };
 export type Espessura = { passo: number } | { classe: string; classes: string[] };
 export type Bloco =
   | { tipo: 'mensagem_chave'; analise: string; tabela: string; valor: CampoFormatado; leitura: string }
-  | { tipo: 'indicadores'; analise: string; tabela: string; itens: (CampoFormatado & { mostrar_unidade?: boolean })[] }
+  | {
+      tipo: 'indicadores';
+      analise: string;
+      tabela: string;
+      itens: (CampoFormatado & { mostrar_unidade?: boolean; complemento?: CampoFormatado })[];
+      selecao?: string;
+    }
+  | {
+      tipo: 'distribuicoes';
+      analise: string;
+      cartoes: { tabela: string; filtro?: Record<string, string>; categoria: CampoFormatado; valor: CampoFormatado; ordem?: string; top: number }[];
+      selecao?: string;
+    }
+  | {
+      tipo: 'tabela';
+      analise: string;
+      tabela: string;
+      colunas: CampoFormatado[];
+      ordem: { campo: string; direcao: 'asc' | 'desc' };
+      destaque?: { campo: string; acima_de: number };
+      selecao?: string;
+    }
+  | { tipo: 'ficha'; analise: string; tabela: string; nome: CampoFormatado; campos: string[]; selecao: string; cabecalho?: true }
   | { tipo: 'ranking'; analise: string; tabela: string; rotulo: CampoFormatado; valor: string; extra?: string; top?: number }
   | {
       tipo: 'serie_empilhada';
