@@ -55,7 +55,7 @@ components/maps/
 - quem publica define o valor ao clicar; quem lê filtra as linhas por ele;
 - componentes próprios leem e trocam a seleção com o hook `useSelecao(campo)`, de `@/components/report`, sem precisar de provedor próprio para isso. (O renderizador roda no servidor e não consegue passar estado do navegador por props.)
 
-O provedor do estudo continua opcional, para estados que não são seleção.
+Além dos mapas, leem a seleção os blocos `indicadores` (com `selecao`), `distribuicoes`, `tabela` e `ficha`: com ela, mostram só as linhas do id escolhido. O provedor do estudo continua opcional, para estados que não são seleção.
 
 **5. Geometria no `data.json`.** Pontos e traçados continuam no `data.json` (tipos `geo_ponto` e `geo_linhas`, ADR-002). O peso da página acompanha o detalhe da geometria: o `acessos-portuarios` gerou uma página de 30 MB. O guia de preenchimento passa a recomendar simplificar os traçados antes da entrega. Uma tolerância da ordem de 20 m não muda o desenho nos zooms do estudo e reduz a geometria em mais de 90%.
 

@@ -171,6 +171,7 @@ O report exibe: *"Em 2026, Países Baixos (Holanda) é o principal mercado no re
 | `texto` | qualquer | `Países Baixos (Holanda)` |
 | `compact` | número | `271344120` → `271,3 mi` |
 | `inteiro` | número | `24651` → `24.651` |
+| `decimal` | número | `871.06` → `871,1` |
 | `fob` | número em dólar | `1132620598` → `US$ 1,1 bi` |
 | `cleanLabel` | texto | `0927800 - ITAJAI` → `ITAJAI` |
 

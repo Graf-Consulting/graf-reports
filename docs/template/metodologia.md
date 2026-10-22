@@ -26,7 +26,7 @@ conclusoes:                            # texto que pode aparecer no report, já 
         tabela: <tabela>
         campo: <campo>
         filtro: { <campo>: <valor> }   # opcional; sem filtro, a tabela deve ter uma linha só
-        formato: <formato>             # texto (valor como está) ou um formatador de lib/report/format.ts: compact, inteiro, fob, cleanLabel
+        formato: <formato>             # texto (valor como está) ou um formatador de lib/report/format.ts: compact, inteiro, decimal, fob, cleanLabel
 ressalvas:                             # todas aparecem no report: na seção que o guideline indicar, na seção da análise ligada ou, sem análise, ao final
   - id: <r1>
     analise: <id-da-analise>           # opcional; omita em ressalvas gerais do estudo

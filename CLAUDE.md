@@ -38,7 +38,9 @@ app/
 components/
   layout/                    Header, Footer
   report/                    blocos de página do kit (Hero, KeyMessage, ReportSection,
-                             MetricCards, ChartCard, Callout, MethodNote, Controls)
+                             MetricCards, ChartCard, Callout, MethodNote, Controls,
+                             IndicadoresSelecao, Distribuicoes, TabelaDados, Ficha) e a
+                             seleção compartilhada (Selecao: SelecaoProvider, useSelecao)
   charts/                    gráficos do kit sobre PlotlyChart (RankingChart,
                              StackedAreaChart, SankeyChart)
   maps/                      mapas do kit sobre o MapaBase (Leaflet + CARTO): MapaRoscas e MapaTrechos
