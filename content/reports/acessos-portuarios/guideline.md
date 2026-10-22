@@ -132,6 +132,15 @@ secoes:
     intro: Selecione uma instalação portuária no seletor do mapa para ver os indicadores. Extensões em quilômetros, quando informadas na base.
     analises:
       - id: indicadores-instalacao
+        titulo: Ocupação por rodovia
+        descricao: Média ponderada pela extensão e máximo entre os links de cada rodovia.
+        indicadores:
+          - campo: extensao_total_km
+            detalhe: detalhe-extensao-instalacao
+          - campo: extensao_70_km
+            detalhe: detalhe-70-instalacao
+          - campo: extensao_sem_vmda_km
+            detalhe: detalhe-sem-vmda-instalacao
   - id: cadastro
     sobretitulo: Cadastro
     titulo: Dados da instalação portuária selecionada
