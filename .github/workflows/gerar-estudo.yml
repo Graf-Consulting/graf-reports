@@ -124,6 +124,7 @@ jobs:
 
             PR: #${{ needs.detectar.outputs.pr }}, branch ${{ needs.detectar.outputs.branch }}.
             Estudos a gerar: ${{ needs.detectar.outputs.slugs }}
+            ${{ github.event_name == 'workflow_dispatch' && 'Disparo manual: as entradas podem não ter mudado desde a última geração. O objetivo é gerar de novo com o kit atual: revise a composição e os componentes próprios e use os blocos e as opções que o kit oferece hoje para atender ao guideline, mesmo que a geração anterior tenha concluído que o kit não cobria algo.' || '' }}
 
             Para cada slug, siga as skills nesta ordem:
             1. 01-validar-entradas. Se reprovar, comente no PR os erros e avisos e pare este estudo.
@@ -136,12 +137,14 @@ jobs:
                no padrão Conventional Commits, e dê push na branch do PR.
             7. 06-abrir-pr no modo A: atualize a descrição do PR com o resumo da geração.
 
+            Se concluir que não há nada a mudar, não termine em silêncio: comente no PR o porquê.
+            Componente próprio que deixou de ser usado sai do registro e do repositório (git rm).
             Nunca altere content/, components/ (o kit, na raiz), lib/, app/layout.tsx nem app/globals.css.
             Componentes próprios ficam em app/reports/<slug>/components/.
             Nunca faça merge.
           claude_args: >-
             --allowedTools
-            "Read,Write,Edit,Glob,Grep,Bash(npm run validar:*),Bash(npm run lint),Bash(npx tsc --noEmit),Bash(npm run build),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh pr edit:*)"
+            "Read,Write,Edit,Glob,Grep,Bash(npm run validar:*),Bash(npm run lint),Bash(npx tsc --noEmit),Bash(npm run build),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(git add:*),Bash(git rm app/reports/:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh pr edit:*)"
 
       # Roda mesmo se o agente falhar, para o custo de toda execução ficar registrado no PR.
       - name: Registrar o custo da geração
@@ -155,9 +158,10 @@ jobs:
           SLUGS: ${{ needs.detectar.outputs.slugs }}
           EVENTO: ${{ github.event_name }}
         run: |
-          # Gerou se o agente fez push de algum commit na branch do PR.
-          DEPOIS=$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)
-          if [ -n "$DEPOIS" ] && [ "$DEPOIS" != "$ANTES" ]; then RESULTADO="gerou commit ${DEPOIS:0:7}"; else RESULTADO="sem commit"; fi
+          # Gerou se o agente (um bot) fez push de commit na branch; commits de pessoas no meio da execução não contam.
+          git fetch -q origin "$BRANCH" || true
+          DO_BOT=$(git log --format='%h %an' "$ANTES..FETCH_HEAD" 2>/dev/null | grep -E '\[bot\]$' | head -n 1 | cut -d' ' -f1)
+          if [ -n "$DO_BOT" ]; then RESULTADO="gerou commit $DO_BOT"; else RESULTADO="sem commit"; fi
           GATILHO=$([ "$EVENTO" = "workflow_dispatch" ] && echo "disparo manual" || echo "push no PR")
           export RESULTADO ROTULO="Geração de $SLUGS ($GATILHO)"
           bash .github/scripts/custo-do-agente.sh
