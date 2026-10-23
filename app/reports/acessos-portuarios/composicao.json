@@ -361,7 +361,8 @@
             "links-compartilhados",
             "vmda-estimativa",
             "raio-em-linha-reta"
-          ]
+          ],
+          "marcadores": true
         }
       ]
     }
